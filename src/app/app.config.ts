@@ -1,8 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
 import { FIREBASE_OPTIONS } from 'ng-firebase-kit';
 
-import { routes } from './app.routes';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDI3tkTie7PJSzRdYQenE6PTEV9V9S4HZA",

@@ -1,0 +1,83 @@
+<form class="global-form-container flex-col" (ngSubmit)="$event.preventDefault(); onSubmit()">
+  <!-- Generic Form Template -->
+  <ng-template #genericForm>
+    <label for="input-field">Input:</label>
+    <input id="input-field" name="inputField" type="text" [(ngModel)]="formData.inputField" />
+
+    <label for="image-input">Upload Image:</label>
+    <input
+      id="image-input"
+      name="imageInput"
+      type="file"
+      accept="image/*"
+      class="file-input"
+      (change)="onFileSelected($event, 'imageInput')"
+    />
+  </ng-template>
+
+  <!-- Login Form Template -->
+  <ng-template #loginForm>
+    <label for="username">Username:</label>
+    <input id="username" name="username" type="text" [(ngModel)]="formData.username" />
+
+    <label for="password">Password:</label>
+    <input id="password" name="password" type="password" [(ngModel)]="formData.password" />
+  </ng-template>
+
+  <!-- Signup Form Template -->
+  <ng-template #signupForm>
+    <label for="signup-username">Username:</label>
+    <input
+      id="signup-username"
+      name="signupUsername"
+      type="text"
+      [(ngModel)]="formData.signupUsername"
+    />
+
+    <label for="signup-email">Email:</label>
+    <input id="signup-email" name="signupEmail" type="email" [(ngModel)]="formData.signupEmail" />
+
+    <label for="signup-password">Password:</label>
+    <input
+      id="signup-password"
+      name="signupPassword"
+      type="password"
+      [(ngModel)]="formData.signupPassword"
+    />
+  </ng-template>
+
+  <!-- Contact Form Template -->
+  <ng-template #contactForm>
+    <label for="contact-name">Name:</label>
+    <input id="contact-name" name="contactName" type="text" [(ngModel)]="formData.contactName" />
+
+    <label for="contact-email">Email:</label>
+    <input
+      id="contact-email"
+      name="contactEmail"
+      type="email"
+      [(ngModel)]="formData.contactEmail"
+    />
+
+    <label for="contact-message">Message:</label>
+    <textarea id="contact-message" name="contactMessage" [(ngModel)]="formData.contactMessage">
+    </textarea>
+  </ng-template>
+
+  @switch (formType) {
+    @case ('generic') {
+      <ng-container *ngTemplateOutlet="genericForm"></ng-container>
+    }
+    @case ('login') {
+      <ng-container *ngTemplateOutlet="loginForm"></ng-container>
+    }
+    @case ('signup') {
+      <ng-container *ngTemplateOutlet="signupForm"></ng-container>
+    }
+    @case ('contact') {
+      <ng-container *ngTemplateOutlet="contactForm"></ng-container>
+    }
+  }
+
+  <button type="submit" class="form-submit-btn">Submit</button>
+</form>

@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, effect, inject } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -8,5 +9,13 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('The Scarlett Touch');
+  private readonly _titleService = inject(Title);
+  protected readonly _title = signal('The Scarlett Touch');
+
+  constructor() {
+    // Automatically updates the browser tab title whenever the signal changes
+    effect(() => {
+      this._titleService.setTitle(this._title());
+    });
+  }
 }
