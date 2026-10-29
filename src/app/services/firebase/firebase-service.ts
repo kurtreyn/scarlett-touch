@@ -1,11 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { signInWithEmailAndPassword, signOut, Auth } from '@angular/fire/auth';
 import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
-import { Observable, take } from 'rxjs';
+import { Observable } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class FirebaseService {
     private _firestore = inject(Firestore);
     private _auth = inject(Auth);

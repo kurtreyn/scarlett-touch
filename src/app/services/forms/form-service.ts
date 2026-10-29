@@ -1,12 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase-service';
 import { IFormData, IFormType } from '../../models/state.interface';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class FormService {
-    constructor(private _firebaseService: FirebaseService) { }
+    private _firebaseService = inject(FirebaseService);
 
     public submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);
