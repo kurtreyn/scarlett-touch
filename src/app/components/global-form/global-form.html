@@ -1,13 +1,28 @@
 <form [formGroup]="form" class="global-form-container flex-col" (ngSubmit)="onSubmit()">
-  <!-- Generic Form Template -->
-  <ng-template #genericForm>
-    <label for="input-field">Input:</label>
-    <input id="input-field" type="text" formControlName="inputField" />
-    @if (form.get('inputField')?.invalid && form.get('inputField')?.touched) {
-      <small class="error-text">Input is required.</small>
+  <!-- Generic Form / Create Post Template -->
+  <ng-template #postForm>
+    <label for="post-topic">Post Topic:</label>
+    <select id="post-topic" formControlName="postTopic" class="form-select">
+      <option value="" disabled selected>Select a topic...</option>
+      <option value="image-gallery">Add to Image Gallery</option>
+      <option value="announcement">Announcement</option>
+      <option value="general-discussion">General Discussion</option>
+    </select>
+    @if (form.get('postTopic')?.invalid && form.get('postTopic')?.touched) {
+      <small class="error-text">Please select a post topic.</small>
     }
 
-    <label for="image-input">Upload Image(s):</label>
+    <label for="input-field">Post Content:</label>
+    <textarea
+      id="input-field"
+      formControlName="inputField"
+      placeholder="What would you like to share?"
+    ></textarea>
+    @if (form.get('inputField')?.invalid && form.get('inputField')?.touched) {
+      <small class="error-text">Post content is required.</small>
+    }
+
+    <label for="image-input">Upload Images:</label>
     <input
       id="image-input"
       type="file"
@@ -77,8 +92,8 @@
 
   <!-- Dynamic Switch Block -->
   @switch (formType) {
-    @case ('generic') {
-      <ng-container *ngTemplateOutlet="genericForm"></ng-container>
+    @case ('post') {
+      <ng-container *ngTemplateOutlet="postForm"></ng-container>
     }
     @case ('login') {
       <ng-container *ngTemplateOutlet="loginForm"></ng-container>

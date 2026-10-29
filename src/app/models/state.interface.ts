@@ -1,10 +1,11 @@
 export interface IFormType {
-    formType: 'generic' | 'login' | 'signup' | 'contact';
+    formType: 'post' | 'login' | 'signup' | 'contact';
 }
 
 export interface IFormData {
-    inputField?: string;
-    imageInput?: File;
+    postTopic?: string;
+    inputField?: string; // Used for post content/body
+    imageInput?: File[];
     email?: string;
     password?: string;
     signupUsername?: string;

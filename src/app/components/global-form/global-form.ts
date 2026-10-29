@@ -15,7 +15,7 @@ export class GlobalForm implements OnInit {
   private _fb = inject(FormBuilder);
   private _formService = inject(FormService);
 
-  @Input() public formType: IFormType['formType'] = 'generic';
+  @Input() public formType: IFormType['formType'] = 'post';
 
   public form!: FormGroup;
   public buttonText: string = 'Submit';
@@ -49,21 +49,23 @@ export class GlobalForm implements OnInit {
         });
         this.buttonText = 'Send Message';
         break;
-      case 'generic':
+      case 'post':
       default:
+        // Refactored for creating a new Firebase post
         this.form = this._fb.group({
+          postTopic: ['', [Validators.required]],
           inputField: ['', [Validators.required]],
-          imageInput: [[]] // Initialized as an empty array for multiple files
+          imageInput: [[]]
         });
-        this.buttonText = 'Submit';
+        this.buttonText = 'Submit Post';
         break;
     }
   }
 
+  // Public because it is called directly from the HTML template event binding
   public onFileSelected(event: any, fieldName: string) {
     const fileList: FileList = event.target.files;
     if (fileList && fileList.length > 0) {
-      // Convert FileList to a standard JavaScript array of Files
       const files: File[] = Array.from(fileList);
       this.form.patchValue({ [fieldName]: files });
     }

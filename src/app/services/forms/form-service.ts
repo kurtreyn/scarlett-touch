@@ -8,11 +8,20 @@ export class FormService {
     private _firebaseService = inject(FirebaseService);
     private _globalStateService = inject(GlobalState);
 
-    public submitForm(formType: IFormType['formType'], formData: IFormData) {
+    public async submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);
         switch (formType) {
-            case 'generic':
-                // this._firebaseService.saveFormData(formType, formData);
+            case 'post':
+                try {
+                    await this._firebaseService.submitPost(
+                        formData.postTopic,
+                        formData.inputField,
+                        formData.imageInput
+                    );
+                    console.log('Post successfully created!');
+                } catch (error) {
+                    console.error('Post submission failed:', error);
+                }
                 break;
             case 'login':
                 if (formData.email && formData.password) {
