@@ -14,12 +14,12 @@
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
     "@angular/core": "^22.0.0",
+    "@angular/fire": "^20.1.0",
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
     "bootstrap": "^5.3.8",
     "firebase": "^13.1.0",
-    "ng-firebase-kit": "file:../ng-firebase-kit/dist/ng-firebase-kit/ng-firebase-kit-0.0.1.tgz",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
