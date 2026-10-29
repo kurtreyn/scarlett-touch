@@ -1,6 +1,7 @@
 import { Component, signal, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { AbstractGlobalState } from './directives/abstract-global-state';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,7 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App extends AbstractGlobalState {
   private readonly _titleService = inject(Title);
   protected readonly _title = signal('The Scarlett Touch');
 
@@ -17,5 +18,7 @@ export class App {
     effect(() => {
       this._titleService.setTitle(this._title());
     });
+
+    super();
   }
 }

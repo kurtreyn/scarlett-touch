@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GlobalForm } from '../global-form/global-form';
+import { AbstractGlobalState } from '../../directives/abstract-global-state';
 
 @Component({
   selector: 'app-main',
@@ -8,4 +9,12 @@ import { GlobalForm } from '../global-form/global-form';
   templateUrl: './main.html',
   styleUrl: './main.scss',
 })
-export class Main { }
+export class Main extends AbstractGlobalState implements OnInit {
+
+  constructor() {
+    super();
+  }
+
+  ngOnInit(): void {
+  }
+}
