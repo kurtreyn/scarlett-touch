@@ -1,22 +1,15 @@
-import { Directive, inject, OnInit, OnDestroy, OnChanges } from '@angular/core';
-import { Auth, user } from '@angular/fire/auth';
-import { FirebaseService } from '../services/firebase/firebase-service';
+import { Directive, OnInit, OnDestroy, OnChanges, inject } from '@angular/core';
+import { GlobalState } from '../services/global-state/global-state';
+import { take } from 'rxjs/operators';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
 })
 export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
-  protected auth = inject(Auth);
-  protected firebaseService = inject(FirebaseService);
-  protected currentUser$ = user(this.auth);
+  private _globalStateService = inject(GlobalState);
 
-
-  protected login(email: string, pass: string) {
-    return this.firebaseService.login(email, pass);
-  }
-
-  protected logout() {
-    return this.firebaseService.logout();
+  public logout() {
+    return this._globalStateService.logout();
   }
 
   ngOnChanges(): void {
@@ -25,6 +18,11 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit(): void {
     // Initialization logic here
+    this._globalStateService.currentUser$.pipe(
+      take(1)
+    ).subscribe(user => {
+      console.log('Current user:', user);
+    });
   }
 
   ngOnDestroy(): void {

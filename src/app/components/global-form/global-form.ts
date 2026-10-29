@@ -18,6 +18,7 @@ export class GlobalForm implements OnInit {
   @Input() public formType: IFormType['formType'] = 'generic';
 
   public form!: FormGroup;
+  public buttonText: string = 'Submit';
 
   public ngOnInit() {
     this._buildForm();
@@ -30,6 +31,7 @@ export class GlobalForm implements OnInit {
           email: ['', [Validators.required, Validators.email]],
           password: ['', [Validators.required, Validators.minLength(6)]]
         });
+        this.buttonText = 'Login';
         break;
       case 'signup':
         this.form = this._fb.group({
@@ -37,6 +39,7 @@ export class GlobalForm implements OnInit {
           signupEmail: ['', [Validators.required, Validators.email]],
           signupPassword: ['', [Validators.required, Validators.minLength(6)]]
         });
+        this.buttonText = 'Sign Up';
         break;
       case 'contact':
         this.form = this._fb.group({
@@ -44,21 +47,25 @@ export class GlobalForm implements OnInit {
           contactEmail: ['', [Validators.required, Validators.email]],
           contactMessage: ['', [Validators.required]]
         });
+        this.buttonText = 'Send Message';
         break;
       case 'generic':
       default:
         this.form = this._fb.group({
           inputField: ['', [Validators.required]],
-          imageInput: [null]
+          imageInput: [[]] // Initialized as an empty array for multiple files
         });
+        this.buttonText = 'Submit';
         break;
     }
   }
 
   public onFileSelected(event: any, fieldName: string) {
-    const file = event.target.files[0];
-    if (file) {
-      this.form.patchValue({ [fieldName]: file });
+    const fileList: FileList = event.target.files;
+    if (fileList && fileList.length > 0) {
+      // Convert FileList to a standard JavaScript array of Files
+      const files: File[] = Array.from(fileList);
+      this.form.patchValue({ [fieldName]: files });
     }
   }
 

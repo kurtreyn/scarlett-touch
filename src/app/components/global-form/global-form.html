@@ -7,11 +7,12 @@
       <small class="error-text">Input is required.</small>
     }
 
-    <label for="image-input">Upload Image:</label>
+    <label for="image-input">Upload Image(s):</label>
     <input
       id="image-input"
       type="file"
       accept="image/*"
+      multiple
       class="file-input"
       (change)="onFileSelected($event, 'imageInput')"
     />
@@ -90,5 +91,5 @@
     }
   }
 
-  <button type="submit" class="form-submit-btn">Submit</button>
+  <button type="submit" class="form-submit-btn">{{ buttonText }}</button>
 </form>

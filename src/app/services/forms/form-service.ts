@@ -1,10 +1,12 @@
 import { Service, inject } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase-service';
 import { IFormData, IFormType } from '../../models/state.interface';
+import { GlobalState } from '../global-state/global-state';
 
 @Service()
 export class FormService {
     private _firebaseService = inject(FirebaseService);
+    private _globalStateService = inject(GlobalState);
 
     public submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);
@@ -14,7 +16,7 @@ export class FormService {
                 break;
             case 'login':
                 if (formData.email && formData.password) {
-                    this._firebaseService.login(formData.email, formData.password);
+                    this._globalStateService.login(formData.email, formData.password);
                 }
                 break;
             case 'signup':

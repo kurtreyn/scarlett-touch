@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { GlobalForm } from '../global-form/global-form';
 import { AbstractGlobalState } from '../../directives/abstract-global-state';
 
