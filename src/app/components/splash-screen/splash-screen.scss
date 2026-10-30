@@ -16,7 +16,7 @@
 
     h1 {
       margin: 0;
-      font-size: 3rem;
+      font-size: 5rem;
       color: #d32f2f;
       font-family: 'Playfair Display', 'Great Vibes', 'Brush Script MT', cursive;
     }
@@ -29,13 +29,24 @@
     text-align: center;
     width: 100%;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    backdrop-filter: blur(4px);
+    width: auto;
+    white-space: nowrap;
 
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
       li {
-        color: #fff;
+        color: #000;
         font-size: 1rem;
       }
     }
