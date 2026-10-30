@@ -11,6 +11,6 @@ export const IMAGE_RESOURCE_MAP = {
 
 export const ICON_RESOURCE_MAP = [
     { name: 'facebook', icon: 'icons/facebook_icon.png', link: 'https://www.facebook.com/thescarletttouch91' },
-    { name: 'instagram', icon: 'icons/instagram_icon.png', link: 'https://www.instagram.com' },
+    { name: 'instagram', icon: 'icons/instagram_icon.png', link: 'https://www.instagram.com/thescarletttouch91/' },
     { name: 'tiktok', icon: 'icons/tiktok_icon.png', link: 'https://www.tiktok.com' }
 ]

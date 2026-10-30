@@ -1,1 +1,33 @@
-<p>nav works!</p>
+<nav class="navbar" [class.menu-open]="isOpen()">
+  <!-- Brand title only displays inside the overlay when the menu is open -->
+  <div class="mobile-menu-overlay" [class.open]="isOpen()">
+    <div class="nav-brand">
+      <a routerLink="/" class="brand-title" (click)="closeMenu()">The Scarlett Touch</a>
+    </div>
+
+    <div class="mobile-links">
+      @for (link of navLinks; track link.label) {
+        <a
+          [routerLink]="link.route"
+          (click)="closeMenu()"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </div>
+  </div>
+
+  <!-- Always visible hamburger button -->
+  <button
+    class="hamburger-btn"
+    [class.open]="isOpen()"
+    (click)="toggleMenu()"
+    aria-label="Toggle navigation menu"
+  >
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</nav>
