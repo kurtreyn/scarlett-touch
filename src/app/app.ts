@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, effect, inject } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { AbstractGlobalState } from './directives/abstract-global-state';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +9,16 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('games-client');
+export class App extends AbstractGlobalState {
+  private readonly _titleService = inject(Title);
+  protected readonly _title = signal('The Scarlett Touch');
+
+  constructor() {
+    // Automatically updates the browser tab title whenever the signal changes
+    effect(() => {
+      this._titleService.setTitle(this._title());
+    });
+
+    super();
+  }
 }

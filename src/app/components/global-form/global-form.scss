@@ -1,0 +1,105 @@
+.global-form-container {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25px; // fallback layout gap
+
+  &.flex-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Form Field Labels
+  label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.35rem;
+  }
+
+  // Inputs, Textareas, and File Pickers
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #1f2937;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 0.25rem;
+
+    &:focus {
+      outline: none;
+      background-color: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+  }
+
+  // Textarea specific sizing
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  // File Input Styling
+  .file-input {
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #4b5563;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+  }
+
+  // Inline Validation Error Text
+  .error-text {
+    font-size: 0.775rem;
+    color: #dc2626;
+    margin-top: -0.1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  // Submit Button
+  .form-submit-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      transform 0.1s ease;
+
+    &:hover {
+      background-color: #1d4ed8;
+    }
+
+    &:active {
+      transform: scale(0.99);
+    }
+
+    &:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+    }
+  }
+}
