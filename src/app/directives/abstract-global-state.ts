@@ -1,4 +1,4 @@
-import { Directive, OnInit, OnDestroy, OnChanges, inject } from '@angular/core';
+import { Directive, OnInit, OnDestroy, OnChanges, inject, signal } from '@angular/core';
 import { GlobalStateService } from '../services/global-state/global-state-service';
 import { take } from 'rxjs/operators';
 
@@ -7,6 +7,8 @@ import { take } from 'rxjs/operators';
 })
 export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   private _globalStateService = inject(GlobalStateService);
+
+  public isLoading = signal(false);
 
   public logout() {
     return this._globalStateService.logout();

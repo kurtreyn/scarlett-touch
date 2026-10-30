@@ -1,0 +1,68 @@
+<div class="post-editor-container flex-col">
+  <h4 class="mb-3">Manage Posts</h4>
+
+  @if (!posts || posts.length === 0) {
+    <p class="text-muted">No posts available.</p>
+  }
+
+  @for (post of posts; track post.id) {
+    <div class="post-card card p-3 mb-3 shadow-sm">
+      <form
+        [formGroup]="getEditForm(post.id, post.topic, post.content)"
+        (ngSubmit)="onUpdatePost(post)"
+      >
+        <div class="mb-2">
+          <label class="form-label small fw-bold">Topic:</label>
+          <select class="form-select form-select-sm" formControlName="topic">
+            <option value="Add to Image Gallery">Add to Image Gallery</option>
+            <option value="Announcement">Announcement</option>
+            <option value="General Discussion">General Discussion</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label small fw-bold">Content:</label>
+          <textarea
+            class="form-control form-control-sm"
+            rows="2"
+            formControlName="content"
+          ></textarea>
+        </div>
+
+        @if (post.images && post.images.length > 0) {
+          <label class="form-label small text-muted">Images (Click X to remove):</label>
+          <div class="thumbnail-grid d-flex flex-wrap gap-2 mb-3">
+            @for (imgUrl of post.images; track imgUrl; let i = $index) {
+              <div class="thumbnail-wrapper position-relative" style="width: 70px; height: 70px">
+                <img
+                  [src]="imgUrl"
+                  alt="Thumbnail"
+                  class="w-100 h-100 object-fit-cover rounded border"
+                />
+                <button
+                  type="button"
+                  class="delete-photo-btn position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger border-0 p-1"
+                  style="font-size: 10px; cursor: pointer"
+                  title="Remove image"
+                  (click)="removeImage(post, i)"
+                >
+                  &times;
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="d-flex justify-content-end">
+          <button
+            type="submit"
+            class="btn btn-sm btn-primary"
+            [disabled]="getEditForm(post.id).invalid"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

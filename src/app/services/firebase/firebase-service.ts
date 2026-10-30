@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { signInWithEmailAndPassword, signOut, Auth } from '@angular/fire/auth';
-import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Firestore, collection, addDoc, doc, updateDoc, onSnapshot } from '@angular/fire/firestore';
+import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
 
@@ -18,9 +18,21 @@ export class FirebaseService {
     /**
      * Fetch a live stream of data from a Firestore collection
      */
-    public getCollectionData(collectionName: string): Observable<any[]> {
+    public getPosts(collectionName: string): Observable<any[]> {
         const colRef = collection(this._firestore, collectionName);
-        return collectionData(colRef, { idField: 'id' });
+
+        return new Observable(subscriber => {
+            const unsubscribe = onSnapshot(colRef, (snapshot) => {
+                const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                subscriber.next(posts);
+            }, (error) => {
+                console.error('Error fetching posts snapshot:', error);
+                subscriber.error(error);
+            });
+
+            // Cleanup subscription on destroy
+            return () => unsubscribe();
+        });
     }
 
     /**
@@ -34,6 +46,20 @@ export class FirebaseService {
             return docRef.id;
         } catch (error) {
             console.error('Error adding document: ', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Update an existing document in a Firestore collection
+     */
+    public async updateDocument(collectionName: string, docId: string, data: any) {
+        try {
+            const docRef = doc(this._firestore, `${collectionName}/${docId}`);
+            await updateDoc(docRef, data);
+            console.log('Document updated with ID: ', docId);
+        } catch (error) {
+            console.error('Error updating document: ', error);
             throw error;
         }
     }
@@ -59,6 +85,21 @@ export class FirebaseService {
         } catch (error) {
             console.error('Error submitting post:', error);
             throw error;
+        }
+    }
+
+    /**
+     * Delete a physical image file from Firebase Storage using its download URL
+     */
+    public async deleteImageFile(fileUrl: string) {
+        try {
+            // Create a storage reference directly from the HTTPS download URL
+            const fileRef = ref(this._storage, fileUrl);
+            await deleteObject(fileRef);
+            console.log('Image successfully deleted from Storage:', fileUrl);
+        } catch (error) {
+            console.error('Error deleting image from Storage:', error);
+            // Non-blocking throw or swallow depending on if file already missing
         }
     }
 
@@ -94,7 +135,6 @@ export class FirebaseService {
      */
     public async login(email: string, pass: string) {
         const response = await signInWithEmailAndPassword(this._auth, email, pass);
-        console.log('User logged in: ', response.user);
         return response;
     }
 
