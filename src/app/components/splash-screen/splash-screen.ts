@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RESOURCE_MAP } from '../../../config/resourceMap';
+import { IMAGE_RESOURCE_MAP } from '../../../config/resourceMap';
 
 @Component({
   selector: 'app-splash-screen',
@@ -8,5 +8,5 @@ import { RESOURCE_MAP } from '../../../config/resourceMap';
   styleUrl: './splash-screen.scss',
 })
 export class SplashScreen {
-  public splashScreenImage = RESOURCE_MAP.splash_screen_image;
+  public splashScreenImage = IMAGE_RESOURCE_MAP.splash_screen_image;
 }
