@@ -41,8 +41,15 @@
                 />
                 <button
                   type="button"
-                  class="delete-photo-btn position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger border-0 p-1"
-                  style="font-size: 10px; cursor: pointer"
+                  class="delete-photo-btn position-absolute badge rounded-pill bg-danger border-0 d-flex align-items-center justify-content-center p-0"
+                  style="
+                    top: 4px;
+                    right: 4px;
+                    width: 18px;
+                    height: 18px;
+                    font-size: 11px;
+                    cursor: pointer;
+                  "
                   title="Remove image"
                   (click)="removeImage(post, i)"
                   [disabled]="isLoading()"
