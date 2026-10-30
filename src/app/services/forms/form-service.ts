@@ -1,12 +1,12 @@
 import { Service, inject } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase-service';
 import { IFormData, IFormType } from '../../models/state.interface';
-import { GlobalState } from '../global-state/global-state';
+import { GlobalStateService } from '../global-state/global-state-service';
 
 @Service()
 export class FormService {
     private _firebaseService = inject(FirebaseService);
-    private _globalStateService = inject(GlobalState);
+    private _globalStateService = inject(GlobalStateService);
 
     public async submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);

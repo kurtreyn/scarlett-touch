@@ -3,7 +3,7 @@ import { Auth, user } from '@angular/fire/auth';
 import { FirebaseService } from '../firebase/firebase-service';
 
 @Service()
-export class GlobalState {
+export class GlobalStateService {
     private _auth = inject(Auth);
     private _firebaseService = inject(FirebaseService);
 

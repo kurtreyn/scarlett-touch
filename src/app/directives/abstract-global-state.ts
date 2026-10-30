@@ -1,12 +1,12 @@
 import { Directive, OnInit, OnDestroy, OnChanges, inject } from '@angular/core';
-import { GlobalState } from '../services/global-state/global-state';
+import { GlobalStateService } from '../services/global-state/global-state-service';
 import { take } from 'rxjs/operators';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
 })
 export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
-  private _globalStateService = inject(GlobalState);
+  private _globalStateService = inject(GlobalStateService);
 
   public logout() {
     return this._globalStateService.logout();
