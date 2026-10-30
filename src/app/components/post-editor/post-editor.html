@@ -1,4 +1,4 @@
-<div class="post-editor-container flex-col">
+<div class="post-editor-container flex-col position-relative">
   <h4 class="mb-3">Manage Posts</h4>
 
   @if (!posts || posts.length === 0) {
@@ -45,6 +45,7 @@
                   style="font-size: 10px; cursor: pointer"
                   title="Remove image"
                   (click)="removeImage(post, i)"
+                  [disabled]="isLoading()"
                 >
                   &times;
                 </button>
@@ -57,7 +58,7 @@
           <button
             type="submit"
             class="btn btn-sm btn-primary"
-            [disabled]="getEditForm(post.id).invalid"
+            [disabled]="getEditForm(post.id).invalid || isLoading()"
           >
             Save Changes
           </button>
