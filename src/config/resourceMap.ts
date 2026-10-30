@@ -8,8 +8,8 @@ export const IMAGE_RESOURCE_MAP = {
 
 };
 
-export const ICON_RESOURCE_MAP = {
-    facebook_icon: 'icons/facebook_icon.png',
-    instagram_icon: 'icons/instagram_icon.png',
-    tiktok_icon: 'icons/tiktok_icon.png'
-};
+export const ICON_RESOURCE_MAP = [
+    { name: 'facebook', icon: 'icons/facebook_icon.png', link: 'https://www.facebook.com' },
+    { name: 'instagram', icon: 'icons/instagram_icon.png', link: 'https://www.instagram.com' },
+    { name: 'tiktok', icon: 'icons/tiktok_icon.png', link: 'https://www.tiktok.com' }
+]

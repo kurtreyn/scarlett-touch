@@ -1,3 +1,25 @@
 <div class="splash-screen">
+  <div class="title-container">
+    <h1>The Scarlett Touch</h1>
+  </div>
+
+  <div class="announcements-area">
+    @if (announcements.length > 0) {
+      <ul>
+        @for (announcement of announcements; track announcement) {
+          <li>{{ announcement }}</li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="social-links-area">
+    @for (icon of socialIcons; track icon) {
+      <a [href]="icon.link" target="_blank">
+        <img [src]="icon.icon" [alt]="icon.name" />
+      </a>
+    }
+  </div>
+
   <img [src]="splashScreenImage" alt="Splash Screen" />
 </div>
