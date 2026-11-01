@@ -15,12 +15,11 @@
     <div class="flex-row">
       <div class="form-area flex-col w-50 mb-2">
         <app-global-form formType="post"></app-global-form>
+        <button (click)="logout()" class="btn btn-warning max-btn-width mt-5">Sign Out</button>
       </div>
       <div class="form-area flex-col w-50">
         <app-post-editor [posts]="posts$ | async"></app-post-editor>
       </div>
     </div>
-
-    <button (click)="logout()" class="btn btn-warning">Sign Out</button>
   </div>
 </div>

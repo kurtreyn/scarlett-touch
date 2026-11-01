@@ -1,5 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase-service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { IFormData, IFormType } from '../../models/state.interface';
 import { GlobalStateService } from '../global-state/global-state-service';
 
@@ -7,6 +9,8 @@ import { GlobalStateService } from '../global-state/global-state-service';
 export class FormService {
     private _firebaseService = inject(FirebaseService);
     private _globalStateService = inject(GlobalStateService);
+    private _router = inject(Router);
+    private _toastr = inject(ToastrService);
 
     public async submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);
@@ -25,7 +29,12 @@ export class FormService {
                 break;
             case 'login':
                 if (formData.email && formData.password) {
-                    this._globalStateService.login(formData.email, formData.password);
+                    this._globalStateService.login(formData.email, formData.password).then((response) => {
+                        this._router.navigate(['/admin']);
+
+                    }).catch((error) => {
+                        this._toastr.error('Login failed', 'Error');
+                    });
                 }
                 break;
             case 'signup':

@@ -1,8 +1,10 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
+import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormService } from '../../services/forms/form-service';
 import { IFormType } from '../../models/state.interface';
+
 
 @Component({
   selector: 'app-global-form',
@@ -14,6 +16,7 @@ import { IFormType } from '../../models/state.interface';
 export class GlobalForm implements OnInit {
   private _fb = inject(FormBuilder);
   private _formService = inject(FormService);
+  private _router = inject(Router);
 
   @Input() public formType: IFormType['formType'] = 'post';
 
@@ -62,7 +65,7 @@ export class GlobalForm implements OnInit {
     }
   }
 
-  // Public because it is called directly from the HTML template event binding
+
   public onFileSelected(event: any, fieldName: string) {
     const fileList: FileList = event.target.files;
     if (fileList && fileList.length > 0) {

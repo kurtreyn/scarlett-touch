@@ -17,4 +17,8 @@ export class GlobalStateService {
         return this._firebaseService.logout();
     }
 
+    public isLoggedIn() {
+        return !!this._auth.currentUser;
+    }
+
 }
