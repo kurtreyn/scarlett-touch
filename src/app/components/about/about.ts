@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { Nav } from '../nav/nav';
 
 @Component({
-  imports: [],
+  imports: [Nav],
   selector: 'app-about',
   styleUrl: './about.scss',
   templateUrl: './about.html',
 })
-export class About {}
+export class About { }

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -10,12 +10,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class Nav {
   public isOpen = signal<boolean>(false);
+  @Input() public useDarkLines: boolean = false;
 
   public navLinks = [
     { label: 'Home', route: '/' },
     { label: 'Gallery', route: '/gallery' },
-    { label: 'Announcements', route: '/announcements' },
-    { label: 'Contact', route: '/contact' }
+    { label: 'About', route: '/about' },
+    { label: 'Services', route: '/services' }
   ];
 
   public toggleMenu(): void {

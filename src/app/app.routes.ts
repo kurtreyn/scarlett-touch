@@ -4,6 +4,7 @@ import { Admin } from './components/admin/admin';
 import { Login } from './components/login/login';
 import { About } from './components/about/about';
 import { Gallery } from './components/gallery/gallery';
+import { Services } from './components/services/services';
 import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'login', component: Login },
     { path: 'about', component: About },
     { path: 'gallery', component: Gallery },
+    { path: 'services', component: Services },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 
 ];
