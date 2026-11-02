@@ -1,6 +1,9 @@
 [build]
   command = "npm run build"
-  publish = "dist/games-client/browser"
+  publish = "dist/scarlett-touch/browser"
+
+[build.environment]
+  NPM_FLAGS = "--legacy-peer-deps"
 
 [[redirects]]
   from = "/"
