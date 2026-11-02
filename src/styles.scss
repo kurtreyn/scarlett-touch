@@ -18,6 +18,11 @@ body {
   padding: 0 2rem;
 }
 
+.page-container {
+  margin-top: 145px;
+  padding: 0 2rem;
+}
+
 .main {
   position: relative;
 }
@@ -50,7 +55,7 @@ body {
 }
 
 .mt-page {
-  margin-top: 145px;
+  margin-top: 50px;
 }
 
 .mt-1 {
@@ -159,6 +164,10 @@ body {
   background-color: #eee;
   color: #aaa;
   cursor: auto;
+}
+
+.max-btn-width {
+  max-width: 30%;
 }
 
 .ng-valid[required],

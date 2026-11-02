@@ -1,0 +1,156 @@
+.splash-screen {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  .title-container {
+    position: absolute;
+    top: 20px;
+    text-align: center;
+    width: 100%;
+    z-index: 2;
+
+    h1 {
+      margin: 0;
+      font-size: 5rem;
+      color: #d32f2f;
+      font-family: 'Playfair Display', 'Great Vibes', 'Brush Script MT', cursive;
+    }
+  }
+
+  .announcements-area {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    backdrop-filter: blur(4px);
+    width: auto;
+    white-space: nowrap;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        color: #000;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .social-links-area {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 22px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+    backdrop-filter: blur(4px);
+    width: auto;
+    white-space: nowrap;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+
+      img {
+        position: static;
+        width: 36px;
+        height: 36px;
+        max-width: none;
+        object-fit: contain;
+      }
+    }
+  }
+
+  img {
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  @media (max-width: 768px) {
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .title-container {
+      top: 15px;
+
+      h1 {
+        font-size: 2.2rem;
+      }
+    }
+
+    .announcements-area {
+      ul {
+        li {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .social-links-area {
+      bottom: 25px;
+      padding: 8px 18px;
+      gap: 12px;
+
+      a {
+        img {
+          width: 30px;
+          height: 30px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .title-container {
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .social-links-area {
+      bottom: 20px;
+      padding: 6px 14px;
+      gap: 10px;
+
+      a {
+        img {
+          width: 26px;
+          height: 26px;
+        }
+      }
+    }
+  }
+}

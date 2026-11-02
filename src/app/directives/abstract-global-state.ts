@@ -1,9 +1,12 @@
 import { Directive, OnInit, OnDestroy, OnChanges, inject, signal } from '@angular/core';
 import { FirebaseService } from '../services/firebase/firebase-service';
 import { GlobalStateService } from '../services/global-state/global-state-service';
-import { take } from 'rxjs/operators';
-import { Observable } from 'rxjs/internal/Observable';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import { take, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../config/appKeyValues';
+import { IPost } from '../models/state.interface';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
@@ -11,29 +14,62 @@ import { APP_KEY_VALUES } from '../../config/appKeyValues';
 export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   private _globalStateService = inject(GlobalStateService);
   private _firebaseService = inject(FirebaseService);
+  private _toastr = inject(ToastrService);
+  private _router = inject(Router);
 
   public isLoading = signal(false);
-  public posts$!: Observable<any[]>;
+  public posts$: Observable<IPost[]> = new Observable<IPost[]>();
+
+  // Centralized derived streams for pages
+  public aboutPosts$: Observable<IPost[]> = new Observable<IPost[]>();
+  public galleryPosts$: Observable<IPost[]> = new Observable<IPost[]>();
+  public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
 
   public logout() {
-    return this._globalStateService.logout();
+    this.isLoading.set(true);
+    return this._globalStateService.logout().then(() => {
+      this._toastr.success('Logged out successfully', 'Success');
+      this._router.navigate(['/login']);
+    }).catch(error => {
+      this._toastr.error('Logout failed', 'Error');
+    }).finally(() => {
+      this.isLoading.set(false);
+    });
   }
 
-  ngOnChanges(): void {
-    // Handle changes here
-  }
+  ngOnChanges(): void { }
 
   ngOnInit(): void {
-    // Initialization logic here
     this._globalStateService.currentUser$.pipe(
       take(1)
     ).subscribe(user => {
       console.log('Current user:', user);
     });
-    this.posts$ = this._firebaseService.getPosts(APP_KEY_VALUES.posts_collection);
+
+    this._loadPosts();
   }
 
-  ngOnDestroy(): void {
-    // Cleanup logic here
+  ngOnDestroy(): void { }
+
+  private _loadPosts() {
+    this.isLoading.set(true);
+    this.posts$ = this._firebaseService.getPosts(APP_KEY_VALUES.posts_collection) as Observable<IPost[]>;
+
+    // Initialize derived streams using the centralized state
+    this.aboutPosts$ = this.posts$.pipe(
+      map(posts => posts.filter(post => post.page === 'about' || post.category === 'announcement' || post.category === 'general'))
+    );
+
+    this.galleryPosts$ = this.posts$.pipe(
+      map(posts => posts.filter(post => post.category === 'image_gallery' || post.page === 'gallery'))
+    );
+
+    this.servicesPosts$ = this.posts$.pipe(
+      map(posts => posts.filter(post => post.category === 'service' || post.page === 'services'))
+    );
+
+    this.posts$.pipe(take(1)).subscribe(() => {
+      this.isLoading.set(false);
+    });
   }
 }

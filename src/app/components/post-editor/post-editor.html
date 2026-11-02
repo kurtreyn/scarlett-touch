@@ -7,27 +7,55 @@
 
   @for (post of posts; track post.id) {
     <div class="post-card card p-3 mb-3 shadow-sm">
-      <form
-        [formGroup]="getEditForm(post.id, post.topic, post.content)"
-        (ngSubmit)="onUpdatePost(post)"
-      >
+      <form [formGroup]="getEditForm(post)" (ngSubmit)="onUpdatePost(post)">
         <div class="mb-2">
-          <label class="form-label small fw-bold">Topic:</label>
-          <select class="form-select form-select-sm" formControlName="topic">
-            <option value="Add to Image Gallery">Add to Image Gallery</option>
-            <option value="Announcement">Announcement</option>
-            <option value="General Discussion">General Discussion</option>
+          <label class="form-label small fw-bold">Category:</label>
+          <select class="form-select form-select-sm" formControlName="category">
+            <option value="general">General</option>
+            <option value="announcement">Announcement</option>
+            <option value="image_gallery">Image Gallery</option>
+            <option value="service">Service</option>
           </select>
         </div>
 
-        <div class="mb-2">
-          <label class="form-label small fw-bold">Content:</label>
-          <textarea
-            class="form-control form-control-sm"
-            rows="2"
-            formControlName="content"
-          ></textarea>
-        </div>
+        @let currentCat = getEditForm(post).get('category')?.value;
+
+        <!-- Content & Page: Shown for General & Announcement -->
+        @if (currentCat !== 'image_gallery' && currentCat !== 'service') {
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Content:</label>
+            <textarea
+              class="form-control form-control-sm"
+              rows="2"
+              formControlName="content"
+            ></textarea>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Page:</label>
+            <select class="form-select form-select-sm" formControlName="page">
+              <option value="about">About</option>
+              <option value="services">Services</option>
+              <option value="gallery">Home</option>
+            </select>
+          </div>
+        }
+
+        <!-- Service Fields: Shown only when category is service -->
+        @if (currentCat === 'service') {
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Service Name:</label>
+            <input type="text" class="form-control form-control-sm" formControlName="serviceName" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold">Service Description:</label>
+            <textarea
+              class="form-control form-control-sm"
+              rows="2"
+              formControlName="serviceDescription"
+            ></textarea>
+          </div>
+        }
 
         @if (post.images && post.images.length > 0) {
           <label class="form-label small text-muted">Images (Click X to remove):</label>
@@ -61,11 +89,19 @@
           </div>
         }
 
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            (click)="onDeletePost(post)"
+            [disabled]="isLoading()"
+          >
+            Delete Post
+          </button>
           <button
             type="submit"
             class="btn btn-sm btn-primary"
-            [disabled]="getEditForm(post.id).invalid || isLoading()"
+            [disabled]="getEditForm(post).invalid || isLoading()"
           >
             Save Changes
           </button>

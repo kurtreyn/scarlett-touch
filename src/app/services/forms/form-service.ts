@@ -1,5 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase-service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { IFormData, IFormType } from '../../models/state.interface';
 import { GlobalStateService } from '../global-state/global-state-service';
 
@@ -7,36 +9,47 @@ import { GlobalStateService } from '../global-state/global-state-service';
 export class FormService {
     private _firebaseService = inject(FirebaseService);
     private _globalStateService = inject(GlobalStateService);
+    private _router = inject(Router);
+    private _toastr = inject(ToastrService);
 
     public async submitForm(formType: IFormType['formType'], formData: IFormData) {
         console.log('Form submitted via service', formType, formData);
         switch (formType) {
             case 'post':
                 try {
-                    await this._firebaseService.submitPost(
-                        formData.postTopic,
-                        formData.inputField,
-                        formData.imageInput
-                    );
-                    console.log('Post successfully created!');
+                    const services = formData.category === 'service' && formData.serviceName ? [{
+                        name: formData.serviceName,
+                        description: formData.serviceDescription || ''
+                    }] : undefined;
+
+                    await this._firebaseService.submitPost({
+                        category: formData.category,
+                        content: formData.content,
+                        page: formData.page,
+                        services: services,
+                        files: formData.imageInput
+                    });
+                    this._toastr.success('Post successfully created!', 'Success');
                 } catch (error) {
                     console.error('Post submission failed:', error);
+                    this._toastr.error('Post submission failed.', 'Error');
                 }
                 break;
             case 'login':
                 if (formData.email && formData.password) {
-                    this._globalStateService.login(formData.email, formData.password);
+                    this._globalStateService.login(formData.email, formData.password).then((response) => {
+                        this._router.navigate(['/admin']);
+                    }).catch((error) => {
+                        this._toastr.error('Login failed', 'Error');
+                    });
                 }
                 break;
             case 'signup':
-                // this._firebaseService.saveFormData(formType, formData);
                 break;
             case 'contact':
-                // this._firebaseService.saveFormData(formType, formData);
                 break;
             default:
                 console.warn('Unknown form type:', formType);
         }
-
     }
 }
