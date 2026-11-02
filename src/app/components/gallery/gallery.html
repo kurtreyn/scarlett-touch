@@ -1,3 +1,47 @@
-<div class="mt-page">
+<div class="mt-page luxury-page">
   <app-nav [useDarkLines]="true"></app-nav>
+
+  <!-- Hero Header -->
+  <header class="luxury-hero text-center py-5 mt-5">
+    <div class="container py-4">
+      <span class="subheading text-uppercase tracking-widest text-danger fw-semibold"
+        >Visual Portfolio</span
+      >
+      <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">The Gallery</h1>
+      <p class="lead text-muted mx-auto" style="max-width: 600px">
+        Explore our signature transformations, vibrant balayage artistry, and precision styling
+        creations.
+      </p>
+    </div>
+  </header>
+
+  <!-- Dynamic Gallery Grid -->
+  <section class="container py-4 mb-5">
+    <div class="row g-4">
+      @for (post of galleryPosts$ | async; track post.id) {
+        @if (post.images && post.images.length > 0) {
+          @for (imgUrl of post.images; track imgUrl) {
+            <div class="col-md-4 col-sm-6">
+              <div
+                class="gallery-card position-relative overflow-hidden rounded shadow-sm"
+                style="height: 320px"
+              >
+                <img
+                  [src]="imgUrl"
+                  alt="Salon transformation"
+                  class="w-100 h-100 object-fit-cover transition-transform"
+                />
+                <!-- <div
+                  class="gallery-overlay position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-50 text-white d-flex align-items-center justify-content-between"
+                >
+                  <span class="small text-uppercase tracking-wider">The Scarlett Touch</span>
+                  <small>{{ post.createdAt | date: 'mediumDate' }}</small>
+                </div> -->
+              </div>
+            </div>
+          }
+        }
+      }
+    </div>
+  </section>
 </div>
