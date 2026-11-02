@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "games-client": {
+    "scarlett-touch": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "games-client:build:production"
+              "buildTarget": "scarlett-touch:build:production"
             },
             "development": {
-              "buildTarget": "games-client:build:development"
+              "buildTarget": "scarlett-touch:build:development"
             }
           },
           "defaultConfiguration": "development"
