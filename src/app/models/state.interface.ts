@@ -20,3 +20,23 @@ export interface ILogin {
     email: string;
     password: string;
 }
+
+export interface IPost {
+    category: 'general' | 'announcement' | 'image_gallery' | 'service';
+    content?: string;
+    images?: IImage[];
+    createdAt: Date;
+    page: 'home' | 'about' | 'services' | 'gallery';
+    services?: IService[];
+}
+
+export interface IImage {
+    file: File;
+    hide: boolean;
+}
+
+export interface IService {
+    name: string;
+    description: string;
+    image?: IImage;
+}

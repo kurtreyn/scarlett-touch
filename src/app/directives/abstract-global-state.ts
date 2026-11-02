@@ -20,11 +20,14 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   public posts$!: Observable<any[]>;
 
   public logout() {
+    this.isLoading.set(true);
     return this._globalStateService.logout().then(() => {
       this._toastr.success('Logged out successfully', 'Success');
       this._router.navigate(['/login']);
     }).catch(error => {
       this._toastr.error('Logout failed', 'Error');
+    }).finally(() => {
+      this.isLoading.set(false);
     });
   }
 
@@ -33,16 +36,24 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
-    // Initialization logic here
     this._globalStateService.currentUser$.pipe(
       take(1)
     ).subscribe(user => {
       console.log('Current user:', user);
-    });
-    this.posts$ = this._firebaseService.getPosts(APP_KEY_VALUES.posts_collection);
+    })
+
+    this._loadPosts();
   }
 
   ngOnDestroy(): void {
     // Cleanup logic here
+  }
+
+  private _loadPosts() {
+    this.isLoading.set(true);
+    this.posts$ = this._firebaseService.getPosts(APP_KEY_VALUES.posts_collection);
+    this.posts$.pipe(take(1)).subscribe(() => {
+      this.isLoading.set(false);
+    });
   }
 }
