@@ -17,35 +17,39 @@ export class FormService {
         switch (formType) {
             case 'post':
                 try {
-                    await this._firebaseService.submitPost(
-                        formData.postTopic,
-                        formData.inputField,
-                        formData.imageInput
-                    );
-                    console.log('Post successfully created!');
+                    const services = formData.category === 'service' && formData.serviceName ? [{
+                        name: formData.serviceName,
+                        description: formData.serviceDescription || ''
+                    }] : undefined;
+
+                    await this._firebaseService.submitPost({
+                        category: formData.category,
+                        content: formData.content,
+                        page: formData.page,
+                        services: services,
+                        files: formData.imageInput
+                    });
+                    this._toastr.success('Post successfully created!', 'Success');
                 } catch (error) {
                     console.error('Post submission failed:', error);
+                    this._toastr.error('Post submission failed.', 'Error');
                 }
                 break;
             case 'login':
                 if (formData.email && formData.password) {
                     this._globalStateService.login(formData.email, formData.password).then((response) => {
                         this._router.navigate(['/admin']);
-
                     }).catch((error) => {
                         this._toastr.error('Login failed', 'Error');
                     });
                 }
                 break;
             case 'signup':
-                // this._firebaseService.saveFormData(formType, formData);
                 break;
             case 'contact':
-                // this._firebaseService.saveFormData(formType, formData);
                 break;
             default:
                 console.warn('Unknown form type:', formType);
         }
-
     }
 }

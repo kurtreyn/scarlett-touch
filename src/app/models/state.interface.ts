@@ -3,8 +3,11 @@ export interface IFormType {
 }
 
 export interface IFormData {
-    postTopic?: string;
-    inputField?: string; // Used for post content/body
+    category?: 'general' | 'announcement' | 'image_gallery' | 'service';
+    content?: string;
+    page?: 'about' | 'services' | 'gallery';
+    serviceName?: string;
+    serviceDescription?: string;
     imageInput?: File[];
     email?: string;
     password?: string;
@@ -22,11 +25,12 @@ export interface ILogin {
 }
 
 export interface IPost {
+    id?: string;
     category: 'general' | 'announcement' | 'image_gallery' | 'service';
     content?: string;
     images?: IImage[];
     createdAt: Date;
-    page: 'home' | 'about' | 'services' | 'gallery';
+    page: 'about' | 'services' | 'gallery';
     services?: IService[];
 }
 

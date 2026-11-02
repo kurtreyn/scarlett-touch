@@ -1,36 +1,73 @@
 <form [formGroup]="form" class="global-form-container flex-col" (ngSubmit)="onSubmit()">
   <!-- Generic Form / Create Post Template -->
   <ng-template #postForm>
-    <label for="post-topic">Post Topic:</label>
-    <select id="post-topic" formControlName="postTopic" class="form-select">
-      <option value="" disabled selected>Select a topic...</option>
-      <option value="image-gallery">Add to Image Gallery</option>
+    <label for="post-category">Post Category:</label>
+    <select id="post-category" formControlName="category" class="form-select">
+      <option value="" disabled selected>Select a category...</option>
+      <option value="image_gallery">Image Gallery</option>
       <option value="announcement">Announcement</option>
-      <option value="general-discussion">General Discussion</option>
+      <option value="general">General</option>
+      <option value="service">Service</option>
     </select>
-    @if (form.get('postTopic')?.invalid && form.get('postTopic')?.touched) {
-      <small class="error-text">Please select a post topic.</small>
+    @if (form.get('category')?.invalid && form.get('category')?.touched) {
+      <small class="error-text">Please select a post category.</small>
     }
 
-    <label for="input-field">Post Content:</label>
-    <textarea
-      id="input-field"
-      formControlName="inputField"
-      placeholder="What would you like to share?"
-    ></textarea>
-    @if (form.get('inputField')?.invalid && form.get('inputField')?.touched) {
-      <small class="error-text">Post content is required.</small>
+    <!-- Content & Page: Shown for General & Announcement -->
+    @if (selectedCategory !== 'image_gallery' && selectedCategory !== 'service') {
+      <label for="content">Post Content:</label>
+      <textarea
+        id="content"
+        formControlName="content"
+        placeholder="What would you like to share?"
+      ></textarea>
+      @if (form.get('content')?.invalid && form.get('content')?.touched) {
+        <small class="error-text">Post content is required.</small>
+      }
+
+      <label for="page">Which page is this post for?</label>
+      <select id="page" formControlName="page" class="form-select">
+        <option value="" disabled selected>Select a page...</option>
+        <option value="about">About</option>
+        <option value="services">Services</option>
+        <option value="gallery">Home</option>
+      </select>
+      @if (form.get('page')?.invalid && form.get('page')?.touched) {
+        <small class="error-text">Please select a page.</small>
+      }
     }
 
-    <label for="image-input">Upload Images:</label>
-    <input
-      id="image-input"
-      type="file"
-      accept="image/*"
-      multiple
-      class="file-input"
-      (change)="onFileSelected($event, 'imageInput')"
-    />
+    <!-- Service Fields: Shown only when category is service -->
+    @if (selectedCategory === 'service') {
+      <label for="service-name">Service Name:</label>
+      <input id="service-name" type="text" formControlName="serviceName" />
+      @if (form.get('serviceName')?.invalid && form.get('serviceName')?.touched) {
+        <small class="error-text">Service name is required.</small>
+      }
+
+      <label for="service-description">Service Description:</label>
+      <textarea
+        id="service-description"
+        formControlName="serviceDescription"
+        placeholder="Describe the service..."
+      ></textarea>
+      @if (form.get('serviceDescription')?.invalid && form.get('serviceDescription')?.touched) {
+        <small class="error-text">Service description is required.</small>
+      }
+    }
+
+    <!-- Image Upload: Shown for Image Gallery or Service -->
+    @if (selectedCategory === 'image_gallery' || selectedCategory === 'service') {
+      <label for="image-input">Upload Images:</label>
+      <input
+        id="image-input"
+        type="file"
+        accept="image/*"
+        multiple
+        class="file-input"
+        (change)="onFileSelected($event, 'imageInput')"
+      />
+    }
   </ng-template>
 
   <!-- Login Form Template -->

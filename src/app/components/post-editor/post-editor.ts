@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ToastrService } from 'ngx-toastr';
 import { FirebaseService } from '../../services/firebase/firebase-service';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
+import { IPost } from '../../models/state.interface';
 
 @Component({
   selector: 'app-post-editor',
@@ -17,16 +18,58 @@ export class PostEditor {
   private _fb = inject(FormBuilder);
   private _toastr = inject(ToastrService);
 
-  @Input() public posts: any[] | null = [];
+  @Input() public posts: IPost[] | null = [];
 
   public isLoading = signal(false);
   private _editForms: { [postId: string]: FormGroup } = {};
 
-  public getEditForm(postId: string, currentTopic?: string, currentContent?: string): FormGroup {
+  public getEditForm(post: IPost): FormGroup {
+    const postId = post.id!;
     if (!this._editForms[postId]) {
+      const category = post.category || 'general';
+      const isGallery = category === 'image_gallery';
+      const isService = category === 'service';
+
+      const firstService = isService && post.services && post.services.length > 0 ? post.services[0] : { name: '', description: '' };
+
+      // Ensure all fields referenced in post-editor.html are registered here
       this._editForms[postId] = this._fb.group({
-        topic: [currentTopic || '', Validators.required],
-        content: [currentContent || '', Validators.required]
+        category: [category, Validators.required],
+        content: [isGallery || isService ? '' : (post.content || ''), isGallery || isService ? [] : [Validators.required]],
+        page: [post.page || (isGallery ? 'gallery' : isService ? 'services' : 'about'), isGallery || isService ? [] : [Validators.required]],
+        serviceName: [isService ? firstService.name : ''],
+        serviceDescription: [isService ? firstService.description : '']
+      });
+
+      // Dynamically handle validation and field state changes when category switches
+      this._editForms[postId].get('category')?.valueChanges.subscribe(cat => {
+        const contentControl = this._editForms[postId].get('content');
+        const pageControl = this._editForms[postId].get('page');
+        const serviceNameControl = this._editForms[postId].get('serviceName');
+        const serviceDescControl = this._editForms[postId].get('serviceDescription');
+
+        contentControl?.clearValidators();
+        pageControl?.clearValidators();
+        serviceNameControl?.clearValidators();
+        serviceDescControl?.clearValidators();
+
+        if (cat === 'image_gallery') {
+          contentControl?.setValue('');
+          pageControl?.setValue('gallery');
+        } else if (cat === 'service') {
+          contentControl?.setValue('');
+          pageControl?.setValue('services');
+          serviceNameControl?.setValidators([Validators.required]);
+          serviceDescControl?.setValidators([Validators.required]);
+        } else {
+          contentControl?.setValidators([Validators.required]);
+          pageControl?.setValidators([Validators.required]);
+        }
+
+        contentControl?.updateValueAndValidity();
+        pageControl?.updateValueAndValidity();
+        serviceNameControl?.updateValueAndValidity();
+        serviceDescControl?.updateValueAndValidity();
       });
     }
     return this._editForms[postId];
@@ -61,11 +104,29 @@ export class PostEditor {
     if (form && form.valid) {
       this.isLoading.set(true);
       try {
-        const updatedData = {
-          topic: form.value.topic,
-          content: form.value.content,
+        const category = form.value.category;
+        const updatedData: any = {
+          category: category,
           images: post.images
         };
+
+        if (category === 'image_gallery') {
+          updatedData.content = '';
+          updatedData.page = 'gallery';
+          delete updatedData.services;
+        } else if (category === 'service') {
+          updatedData.content = '';
+          updatedData.page = 'services';
+          updatedData.services = [{
+            name: form.value.serviceName,
+            description: form.value.serviceDescription
+          }];
+        } else {
+          updatedData.content = form.value.content;
+          updatedData.page = form.value.page;
+          delete updatedData.services;
+        }
+
         await this._firebaseService.updateDocument(
           APP_KEY_VALUES.posts_collection,
           post.id,
@@ -78,6 +139,36 @@ export class PostEditor {
       } finally {
         this.isLoading.set(false);
       }
+    } else {
+      form.markAllAsTouched();
+    }
+  }
+
+  public async onDeletePost(post: any) {
+    if (!confirm('Are you sure you want to delete this post? All attached images will also be deleted.')) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    try {
+      if (post.images && post.images.length > 0) {
+        const imageDeletionPromises = post.images.map((imgUrl: string) =>
+          this._firebaseService.deleteImageFile(imgUrl)
+        );
+        await Promise.all(imageDeletionPromises);
+      }
+
+      await this._firebaseService.deleteDocument(
+        APP_KEY_VALUES.posts_collection,
+        post.id
+      );
+
+      this._toastr.success('Post successfully deleted!', 'Success');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      this._toastr.error('Failed to delete post.', 'Error');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 }

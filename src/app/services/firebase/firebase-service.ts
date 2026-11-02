@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { signInWithEmailAndPassword, signOut, Auth } from '@angular/fire/auth';
-import { Firestore, collection, addDoc, doc, updateDoc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
@@ -11,13 +11,6 @@ export class FirebaseService {
     private _auth = inject(Auth);
     private _storage = inject(Storage);
 
-    // ==========================================
-    // FIRESTORE DATABASE & STORAGE METHODS
-    // ==========================================
-
-    /**
-     * Fetch a live stream of data from a Firestore collection
-     */
     public getPosts(collectionName: string): Observable<any[]> {
         const colRef = collection(this._firestore, collectionName);
 
@@ -30,14 +23,10 @@ export class FirebaseService {
                 subscriber.error(error);
             });
 
-            // Cleanup subscription on destroy
             return () => unsubscribe();
         });
     }
 
-    /**
-     * Add a new document to a Firestore collection
-     */
     public async addDocument(collectionName: string, data: any) {
         try {
             const colRef = collection(this._firestore, collectionName);
@@ -50,9 +39,6 @@ export class FirebaseService {
         }
     }
 
-    /**
-     * Update an existing document in a Firestore collection
-     */
     public async updateDocument(collectionName: string, docId: string, data: any) {
         try {
             const docRef = doc(this._firestore, `${collectionName}/${docId}`);
@@ -64,21 +50,45 @@ export class FirebaseService {
         }
     }
 
-    /**
-     * Handle multi-image uploads to Storage and save the post document to Firestore
-     */
-    public async submitPost(topic?: string, content?: string, files?: File[]) {
+    public async deleteDocument(collectionName: string, docId: string) {
         try {
-            const selectedTopic = topic || 'general';
-            // Pass the topic into the upload method
-            const imageUrls = await this._uploadImages(selectedTopic, files);
+            const docRef = doc(this._firestore, `${collectionName}/${docId}`);
+            await deleteDoc(docRef);
+            console.log('Document deleted with ID: ', docId);
+        } catch (error) {
+            console.error('Error deleting document: ', error);
+            throw error;
+        }
+    }
 
-            const postPayload = {
-                topic: selectedTopic,
-                content: content || '',
-                images: imageUrls,
-                createdAt: new Date().toISOString()
+    public async submitPost(postData: {
+        category?: string;
+        content?: string;
+        page?: string;
+        services?: any[];
+        files?: File[];
+    }) {
+        try {
+            const selectedCategory = postData.category || 'general';
+            const imageUrls = await this._uploadImages(selectedCategory, postData.files);
+
+            const postPayload: any = {
+                category: selectedCategory,
+                createdAt: new Date().toISOString(),
+                images: imageUrls
             };
+
+            if (selectedCategory === 'image_gallery') {
+                postPayload.content = '';
+                postPayload.page = 'gallery';
+            } else if (selectedCategory === 'service') {
+                postPayload.content = '';
+                postPayload.page = 'services';
+                postPayload.services = postData.services || [];
+            } else {
+                postPayload.content = postData.content || '';
+                postPayload.page = postData.page || 'about';
+            }
 
             const docId = await this.addDocument(APP_KEY_VALUES.posts_collection, postPayload);
             return docId;
@@ -88,34 +98,25 @@ export class FirebaseService {
         }
     }
 
-    /**
-     * Delete a physical image file from Firebase Storage using its download URL
-     */
     public async deleteImageFile(fileUrl: string) {
         try {
-            // Create a storage reference directly from the HTTPS download URL
             const fileRef = ref(this._storage, fileUrl);
             await deleteObject(fileRef);
             console.log('Image successfully deleted from Storage:', fileUrl);
         } catch (error) {
             console.error('Error deleting image from Storage:', error);
-            // Non-blocking throw or swallow depending on if file already missing
         }
     }
 
-    private async _uploadImages(topic: string, files?: File[]): Promise<string[]> {
+    private async _uploadImages(category: string, files?: File[]): Promise<string[]> {
         if (!files || files.length === 0) {
             return [];
         }
 
-        // Clean the topic string to make it safe for storage paths (e.g., "Add to Image Gallery" -> "image_gallery")
-        const subFolderName = topic.toLowerCase().replace(/\s+/g, '_');
-
-        // Generate current date string (YYYY-MM-DD)
+        const subFolderName = category.toLowerCase().replace(/\s+/g, '_');
         const dateString = new Date().toISOString().split('T')[0];
 
         const uploadPromises = files.map(async (file) => {
-            // Structure: folderName/YYYY-MM-DD/timestamp_filename
             const filePath = `${APP_KEY_VALUES.images_folder}/${subFolderName}/${dateString}/${Date.now()}_${file.name}`;
             const fileRef = ref(this._storage, filePath);
 
@@ -126,21 +127,11 @@ export class FirebaseService {
         return await Promise.all(uploadPromises);
     }
 
-    // ==========================================
-    // FIREBASE AUTHENTICATION METHODS
-    // ==========================================
-
-    /**
-     * Log in an existing user with email and password
-     */
     public async login(email: string, pass: string) {
         const response = await signInWithEmailAndPassword(this._auth, email, pass);
         return response;
     }
 
-    /**
-     * Log out the current user
-     */
     public async logout() {
         return await signOut(this._auth);
     }
