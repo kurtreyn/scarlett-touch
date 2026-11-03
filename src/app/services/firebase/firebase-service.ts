@@ -4,6 +4,7 @@ import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } 
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
+import { IImage } from '../../models/state.interface';
 
 @Service()
 export class FirebaseService {
@@ -108,7 +109,7 @@ export class FirebaseService {
         }
     }
 
-    private async _uploadImages(category: string, files?: File[]): Promise<string[]> {
+    private async _uploadImages(category: string, files?: File[]): Promise<IImage[]> {
         if (!files || files.length === 0) {
             return [];
         }
@@ -121,7 +122,11 @@ export class FirebaseService {
             const fileRef = ref(this._storage, filePath);
 
             const snapshot = await uploadBytes(fileRef, file);
-            return await getDownloadURL(snapshot.ref);
+            const url = await getDownloadURL(snapshot.ref);
+            return {
+                url: url,
+                hide: false
+            } as IImage;
         });
 
         return await Promise.all(uploadPromises);

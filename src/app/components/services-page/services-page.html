@@ -37,15 +37,18 @@
             }
 
             <!-- Attached Service Imagery -->
+            <!-- Attached Service Imagery -->
             @if (post.images && post.images.length > 0) {
               <div class="mt-3">
-                @for (img of post.images; track img) {
-                  <img
-                    [src]="img"
-                    alt="Service preview"
-                    class="img-fluid rounded object-fit-cover w-100"
-                    style="max-height: 200px"
-                  />
+                @for (img of post.images; track getImageUrl(img)) {
+                  @if (!isImageHidden(img)) {
+                    <img
+                      [src]="getImageUrl(img)"
+                      alt="Service preview"
+                      class="img-fluid rounded object-fit-cover w-100 mb-2"
+                      style="max-height: 200px"
+                    />
+                  }
                 }
               </div>
             }

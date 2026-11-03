@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { take, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../config/appKeyValues';
-import { IPost } from '../models/state.interface';
+import { IPost, IImage } from '../models/state.interface';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
@@ -24,6 +24,17 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   public aboutPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public galleryPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
+
+  // Helper methods available to any component extending this directive
+  public getImageUrl(img: string | IImage): string {
+    if (!img) return '';
+    return typeof img === 'string' ? img : (img.url || '');
+  }
+
+  public isImageHidden(img: string | IImage): boolean {
+    if (!img || typeof img === 'string') return false;
+    return !!img.hide;
+  }
 
   public logout() {
     this.isLoading.set(true);

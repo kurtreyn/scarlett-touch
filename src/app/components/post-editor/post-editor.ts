@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ToastrService } from 'ngx-toastr';
 import { FirebaseService } from '../../services/firebase/firebase-service';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
-import { IPost } from '../../models/state.interface';
+import { IPost, IImage } from '../../models/state.interface';
 
 @Component({
   selector: 'app-post-editor',
@@ -167,6 +167,48 @@ export class PostEditor {
     } catch (error) {
       console.error('Error deleting post:', error);
       this._toastr.error('Failed to delete post.', 'Error');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  public getImageUrl(img: string | IImage): string {
+    return typeof img === 'string' ? img : (img.url || '');
+  }
+
+  public isImageHidden(img: string | IImage): boolean {
+    return typeof img === 'object' && img !== null ? !!img.hide : false;
+  }
+
+  public async toggleImageHide(post: any, imageIndex: number, event: any) {
+    const isChecked = event.target.checked;
+    const updatedImages = [...post.images];
+    const currentImg = updatedImages[imageIndex];
+
+    if (typeof currentImg === 'string') {
+      updatedImages[imageIndex] = {
+        url: currentImg,
+        hide: isChecked
+      };
+    } else {
+      updatedImages[imageIndex] = {
+        ...currentImg,
+        hide: isChecked
+      };
+    }
+
+    this.isLoading.set(true);
+    try {
+      await this._firebaseService.updateDocument(
+        APP_KEY_VALUES.posts_collection,
+        post.id,
+        { images: updatedImages }
+      );
+      post.images = updatedImages;
+      this._toastr.success('Image visibility updated!', 'Success');
+    } catch (error) {
+      console.error('Failed to update image visibility:', error);
+      this._toastr.error('Failed to update image visibility.', 'Error');
     } finally {
       this.isLoading.set(false);
     }
