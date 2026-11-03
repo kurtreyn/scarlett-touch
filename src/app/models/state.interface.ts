@@ -35,7 +35,7 @@ export interface IPost {
     category: 'general' | 'announcement' | 'image_gallery' | 'service';
     content?: string;
     images?: IImage[];
-    createdAt: Date;
+    createdAt: Date | string;
     page: 'about' | 'services' | 'gallery';
     services?: IService[];
 }

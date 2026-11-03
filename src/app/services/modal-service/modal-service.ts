@@ -1,9 +1,10 @@
 import { Service, signal } from '@angular/core';
+import { APP_KEY_VALUES } from '../../../config/appKeyValues';
 
 @Service()
 export class ModalService {
     public isOpen = signal<boolean>(false);
-    public modalType = signal<string>('confirmation');
+    public modalType = signal<string>(APP_KEY_VALUES.confirmation_modal_type);
     public title = signal<string>('Confirm Action');
     public message = signal<string>('Are you sure you want to proceed?');
 

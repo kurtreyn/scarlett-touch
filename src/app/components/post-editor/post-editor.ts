@@ -28,9 +28,9 @@ export class PostEditor {
   public getEditForm(post: IPost): FormGroup {
     const postId = post.id!;
     if (!this._editForms[postId]) {
-      const category = post.category || 'general';
-      const isGallery = category === 'image_gallery';
-      const isService = category === 'service';
+      const category = post.category || APP_KEY_VALUES.general_category;
+      const isGallery = category === APP_KEY_VALUES.image_gallery_category;
+      const isService = category === APP_KEY_VALUES.service_category;
 
       const firstService = isService && post.services && post.services.length > 0 ? post.services[0] : { name: '', description: '' };
 
@@ -38,7 +38,7 @@ export class PostEditor {
       this._editForms[postId] = this._fb.group({
         category: [category, Validators.required],
         content: [isGallery || isService ? '' : (post.content || ''), isGallery || isService ? [] : [Validators.required]],
-        page: [post.page || (isGallery ? 'gallery' : isService ? 'services' : 'about'), isGallery || isService ? [] : [Validators.required]],
+        page: [post.page || (isGallery ? APP_KEY_VALUES.image_gallery_category : isService ? APP_KEY_VALUES.service_category : APP_KEY_VALUES.about_page), isGallery || isService ? [] : [Validators.required]],
         serviceName: [isService ? firstService.name : ''],
         serviceDescription: [isService ? firstService.description : '']
       });
@@ -55,12 +55,12 @@ export class PostEditor {
         serviceNameControl?.clearValidators();
         serviceDescControl?.clearValidators();
 
-        if (cat === 'image_gallery') {
+        if (cat === APP_KEY_VALUES.image_gallery_category) {
           contentControl?.setValue('');
-          pageControl?.setValue('gallery');
-        } else if (cat === 'service') {
+          pageControl?.setValue(APP_KEY_VALUES.image_gallery_category);
+        } else if (cat === APP_KEY_VALUES.service_category) {
           contentControl?.setValue('');
-          pageControl?.setValue('services');
+          pageControl?.setValue(APP_KEY_VALUES.service_category);
           serviceNameControl?.setValidators([Validators.required]);
           serviceDescControl?.setValidators([Validators.required]);
         } else {
@@ -112,13 +112,13 @@ export class PostEditor {
           images: post.images
         };
 
-        if (category === 'image_gallery') {
+        if (category === APP_KEY_VALUES.image_gallery_category) {
           updatedData.content = '';
-          updatedData.page = 'gallery';
+          updatedData.page = APP_KEY_VALUES.image_gallery_category;
           delete updatedData.services;
-        } else if (category === 'service') {
+        } else if (category === APP_KEY_VALUES.service_category) {
           updatedData.content = '';
-          updatedData.page = 'services';
+          updatedData.page = APP_KEY_VALUES.service_category;
           updatedData.services = [{
             name: form.value.serviceName,
             description: form.value.serviceDescription
@@ -148,7 +148,7 @@ export class PostEditor {
 
   public onDeletePost(post: any) {
     this._modalService.openModal(
-      'confirmation',
+      APP_KEY_VALUES.confirmation_modal_type,
       'Delete Post',
       'Are you sure you want to delete this post? All attached images will also be deleted.',
       async () => {

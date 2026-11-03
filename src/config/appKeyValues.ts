@@ -11,5 +11,6 @@ export const APP_KEY_VALUES = {
     service_category: 'service',
     about_page: 'about',
     services_page: 'services',
-    gallery_page: 'gallery'
+    gallery_page: 'gallery',
+    confirmation_modal_type: 'confirmation'
 };
