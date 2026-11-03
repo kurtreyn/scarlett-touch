@@ -4,11 +4,10 @@
   </div>
 
   <div class="announcements-area">
-    @if (announcements.length > 0) {
+    @let latestAnnouncements = homePageAnnouncements$ | async;
+    @if (latestAnnouncements && latestAnnouncements.length > 0) {
       <ul>
-        @for (announcement of announcements; track announcement) {
-          <li>{{ announcement }}</li>
-        }
+        <li>{{ latestAnnouncements[0].content }}</li>
       </ul>
     }
   </div>

@@ -71,6 +71,7 @@ export class FirebaseService {
     }) {
         try {
             const selectedCategory = postData.category || 'general';
+            const selectedPage = postData.page || 'about';
             const imageUrls = await this._uploadImages(selectedCategory, postData.files);
 
             const postPayload: any = {
@@ -88,7 +89,7 @@ export class FirebaseService {
                 postPayload.services = postData.services || [];
             } else {
                 postPayload.content = postData.content || '';
-                postPayload.page = postData.page || 'about';
+                postPayload.page = selectedPage;
             }
 
             const docId = await this.addDocument(APP_KEY_VALUES.posts_collection, postPayload);

@@ -13,8 +13,8 @@ export const authGuard = (): Observable<boolean | UrlTree> => {
             if (user) {
                 return true; // Allow access
             }
-            // Redirect to home if not authenticated
-            return router.createUrlTree(['/']);
+            // Redirect to login if not authenticated
+            return router.createUrlTree(['/login']);
         })
     );
 };
