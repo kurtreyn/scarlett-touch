@@ -24,6 +24,7 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   public aboutPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public galleryPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
+  public homePageAnnouncements$: Observable<IPost[]> = new Observable<IPost[]>();
 
   // Helper methods available to any component extending this directive
   public getImageUrl(img: string | IImage): string {
@@ -65,18 +66,28 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   private _loadPosts() {
     this.isLoading.set(true);
     this.posts$ = this._firebaseService.getPosts(APP_KEY_VALUES.posts_collection) as Observable<IPost[]>;
+    this.posts$ = this.posts$.pipe(
+      map(posts => posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+    );
 
     // Initialize derived streams using the centralized state
     this.aboutPosts$ = this.posts$.pipe(
-      map(posts => posts.filter(post => post.page === 'about' || post.category === 'announcement' || post.category === 'general'))
+      map(posts => posts.filter(post => post.page === APP_KEY_VALUES.about_page || post.category === APP_KEY_VALUES.announcements_category || post.category === APP_KEY_VALUES.general_category))
     );
 
     this.galleryPosts$ = this.posts$.pipe(
-      map(posts => posts.filter(post => post.category === 'image_gallery' || post.page === 'gallery'))
+      map(posts => posts.filter(post => post.category === APP_KEY_VALUES.image_gallery_category || post.page === APP_KEY_VALUES.gallery_page))
     );
 
     this.servicesPosts$ = this.posts$.pipe(
-      map(posts => posts.filter(post => post.category === 'service' || post.page === 'services'))
+      map(posts => posts.filter(post => post.category === APP_KEY_VALUES.service_category || post.page === APP_KEY_VALUES.services_page))
+    );
+
+    this.homePageAnnouncements$ = this.posts$.pipe(
+      map(posts => posts
+        .filter(post => post.category === APP_KEY_VALUES.announcements_category && post.page === APP_KEY_VALUES.home_page)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      )
     );
 
     this.posts$.pipe(take(1)).subscribe(() => {

@@ -9,6 +9,7 @@ export const APP_KEY_VALUES = {
     announcements_category: 'announcement',
     image_gallery_category: 'image_gallery',
     service_category: 'service',
+    home_page: 'home',
     about_page: 'about',
     services_page: 'services',
     gallery_page: 'gallery',
