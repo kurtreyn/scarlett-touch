@@ -1,11 +1,12 @@
 import { Component, signal, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { GlobalModal } from './components/global-modal/global-modal';
 import { AbstractGlobalState } from './directives/abstract-global-state';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, GlobalModal],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

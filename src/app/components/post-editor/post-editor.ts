@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { FirebaseService } from '../../services/firebase/firebase-service';
+import { ModalService } from '../../services/modal-service/modal-service';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
 import { IPost, IImage } from '../../models/state.interface';
 
@@ -17,6 +18,7 @@ export class PostEditor {
   private _firebaseService = inject(FirebaseService);
   private _fb = inject(FormBuilder);
   private _toastr = inject(ToastrService);
+  private _modalService = inject(ModalService);
 
   @Input() public posts: IPost[] | null = [];
 
@@ -144,32 +146,36 @@ export class PostEditor {
     }
   }
 
-  public async onDeletePost(post: any) {
-    if (!confirm('Are you sure you want to delete this post? All attached images will also be deleted.')) {
-      return;
-    }
+  public onDeletePost(post: any) {
+    this._modalService.openModal(
+      'confirmation',
+      'Delete Post',
+      'Are you sure you want to delete this post? All attached images will also be deleted.',
+      async () => {
+        this.isLoading.set(true);
+        try {
+          if (post.images && post.images.length > 0) {
+            const imageDeletionPromises = post.images.map((img: any) => {
+              const imgUrl = typeof img === 'string' ? img : img.url;
+              return imgUrl ? this._firebaseService.deleteImageFile(imgUrl) : Promise.resolve();
+            });
+            await Promise.all(imageDeletionPromises);
+          }
 
-    this.isLoading.set(true);
-    try {
-      if (post.images && post.images.length > 0) {
-        const imageDeletionPromises = post.images.map((imgUrl: string) =>
-          this._firebaseService.deleteImageFile(imgUrl)
-        );
-        await Promise.all(imageDeletionPromises);
+          await this._firebaseService.deleteDocument(
+            APP_KEY_VALUES.posts_collection,
+            post.id
+          );
+
+          this._toastr.success('Post successfully deleted!', 'Success');
+        } catch (error) {
+          console.error('Error deleting post:', error);
+          this._toastr.error('Failed to delete post.', 'Error');
+        } finally {
+          this.isLoading.set(false);
+        }
       }
-
-      await this._firebaseService.deleteDocument(
-        APP_KEY_VALUES.posts_collection,
-        post.id
-      );
-
-      this._toastr.success('Post successfully deleted!', 'Success');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      this._toastr.error('Failed to delete post.', 'Error');
-    } finally {
-      this.isLoading.set(false);
-    }
+    );
   }
 
   public getImageUrl(img: string | IImage): string {
