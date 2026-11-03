@@ -48,12 +48,15 @@
         <div class="col-md-4">
           <div class="card h-100 border-0 shadow-sm p-3">
             @if (post.images && post.images.length > 0) {
-              <img
-                [src]="post.images[0]"
-                alt="Post image"
-                class="rounded mb-3 object-fit-cover"
-                style="height: 220px; width: 100%"
-              />
+              @let firstVisibleImg = post.images.find((img) => !isImageHidden(img));
+              @if (firstVisibleImg) {
+                <img
+                  [src]="getImageUrl(firstVisibleImg)"
+                  alt="Post image"
+                  class="rounded mb-3 object-fit-cover"
+                  style="height: 220px; width: 100%"
+                />
+              }
             }
             <span class="badge bg-light text-danger text-uppercase mb-2 align-self-start">{{
               post.category

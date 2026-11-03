@@ -58,14 +58,17 @@
         }
 
         @if (post.images && post.images.length > 0) {
-          <label class="form-label small text-muted">Images (Click X to remove):</label>
+          <label class="form-label small text-muted"
+            >Images (Click X to remove, check to hide):</label
+          >
           <div class="thumbnail-grid d-flex flex-wrap gap-2 mb-3">
-            @for (imgUrl of post.images; track imgUrl; let i = $index) {
-              <div class="thumbnail-wrapper position-relative" style="width: 70px; height: 70px">
+            @for (img of post.images; track getImageUrl(img); let i = $index) {
+              <div class="thumbnail-wrapper position-relative" style="width: 75px; height: 105px">
                 <img
-                  [src]="imgUrl"
+                  [src]="getImageUrl(img)"
                   alt="Thumbnail"
-                  class="w-100 h-100 object-fit-cover rounded border"
+                  class="w-100 rounded border object-fit-cover"
+                  style="height: 70px"
                 />
                 <button
                   type="button"
@@ -84,6 +87,16 @@
                 >
                   &times;
                 </button>
+                <div class="form-check mt-1 text-center">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [checked]="isImageHidden(img)"
+                    (change)="toggleImageHide(post, i, $event)"
+                    title="Hide image"
+                  />
+                  <small class="d-block text-muted" style="font-size: 9px">Hide</small>
+                </div>
               </div>
             }
           </div>

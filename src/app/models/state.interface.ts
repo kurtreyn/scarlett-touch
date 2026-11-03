@@ -24,6 +24,12 @@ export interface ILogin {
     password: string;
 }
 
+export interface IImage {
+    url?: string;
+    file?: File;
+    hide: boolean;
+}
+
 export interface IPost {
     id?: string;
     category: 'general' | 'announcement' | 'image_gallery' | 'service';
@@ -32,11 +38,6 @@ export interface IPost {
     createdAt: Date;
     page: 'about' | 'services' | 'gallery';
     services?: IService[];
-}
-
-export interface IImage {
-    file: File;
-    hide: boolean;
 }
 
 export interface IService {

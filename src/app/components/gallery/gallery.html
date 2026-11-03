@@ -20,25 +20,21 @@
     <div class="row g-4">
       @for (post of galleryPosts$ | async; track post.id) {
         @if (post.images && post.images.length > 0) {
-          @for (imgUrl of post.images; track imgUrl) {
-            <div class="col-md-4 col-sm-6">
-              <div
-                class="gallery-card position-relative overflow-hidden rounded shadow-sm"
-                style="height: 320px"
-              >
-                <img
-                  [src]="imgUrl"
-                  alt="Salon transformation"
-                  class="w-100 h-100 object-fit-cover transition-transform"
-                />
-                <!-- <div
-                  class="gallery-overlay position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-50 text-white d-flex align-items-center justify-content-between"
+          @for (img of post.images; track getImageUrl(img)) {
+            @if (!isImageHidden(img)) {
+              <div class="col-md-4 col-sm-6">
+                <div
+                  class="gallery-card position-relative overflow-hidden rounded shadow-sm"
+                  style="height: 320px"
                 >
-                  <span class="small text-uppercase tracking-wider">The Scarlett Touch</span>
-                  <small>{{ post.createdAt | date: 'mediumDate' }}</small>
-                </div> -->
+                  <img
+                    [src]="getImageUrl(img)"
+                    alt="Salon transformation"
+                    class="w-100 h-100 object-fit-cover transition-transform"
+                  />
+                </div>
               </div>
-            </div>
+            }
           }
         }
       }
