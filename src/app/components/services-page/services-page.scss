@@ -1,0 +1,13 @@
+.luxury-page {
+  .luxury-hero {
+    .lead {
+      max-width: 650px;
+    }
+  }
+
+  .service-preview-img {
+    max-height: 300px;
+    object-fit: cover;
+    width: 100%;
+  }
+}
