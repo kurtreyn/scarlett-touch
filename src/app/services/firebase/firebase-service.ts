@@ -4,7 +4,7 @@ import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } 
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
-import { IImage } from '../../models/state.interface';
+import { IImage, IPost, IService } from '../../models/state.interface';
 
 @Service()
 export class FirebaseService {
@@ -12,12 +12,12 @@ export class FirebaseService {
     private _auth = inject(Auth);
     private _storage = inject(Storage);
 
-    public getPosts(collectionName: string): Observable<any[]> {
+    public getPosts(collectionName: string): Observable<IPost[]> {
         const colRef = collection(this._firestore, collectionName);
 
         return new Observable(subscriber => {
             const unsubscribe = onSnapshot(colRef, (snapshot) => {
-                const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const posts = snapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() } as IPost));
                 subscriber.next(posts);
             }, (error) => {
                 console.error('Error fetching posts snapshot:', error);
@@ -28,7 +28,7 @@ export class FirebaseService {
         });
     }
 
-    public async addDocument(collectionName: string, data: any) {
+    public async addDocument(collectionName: string, data: Partial<IPost>): Promise<string> {
         try {
             const colRef = collection(this._firestore, collectionName);
             const docRef = await addDoc(colRef, data);
@@ -40,7 +40,7 @@ export class FirebaseService {
         }
     }
 
-    public async updateDocument(collectionName: string, docId: string, data: any) {
+    public async updateDocument(collectionName: string, docId: string, data: Partial<IPost>): Promise<void> {
         try {
             const docRef = doc(this._firestore, `${collectionName}/${docId}`);
             await updateDoc(docRef, data);
@@ -51,7 +51,7 @@ export class FirebaseService {
         }
     }
 
-    public async deleteDocument(collectionName: string, docId: string) {
+    public async deleteDocument(collectionName: string, docId: string): Promise<void> {
         try {
             const docRef = doc(this._firestore, `${collectionName}/${docId}`);
             await deleteDoc(docRef);
@@ -63,34 +63,41 @@ export class FirebaseService {
     }
 
     public async submitPost(postData: {
-        category?: string;
+        category?: IPost['category'];
         content?: string;
-        page?: string;
-        services?: any[];
+        page?: IPost['page'];
+        services?: IService[];
         files?: File[];
-    }) {
+    }): Promise<string> {
         try {
-            const selectedCategory = postData.category || 'general';
-            const selectedPage = postData.page || 'about';
+            const selectedCategory: IPost['category'] = postData.category || (APP_KEY_VALUES.general_category as IPost['category']);
+            const selectedPage: IPost['page'] = postData.page || (APP_KEY_VALUES.about_page as IPost['page']);
             const imageUrls = await this._uploadImages(selectedCategory, postData.files);
 
-            const postPayload: any = {
-                category: selectedCategory,
-                createdAt: new Date().toISOString(),
-                images: imageUrls
-            };
+            let contentValue = '';
+            let pageValue: IPost['page'] = selectedPage;
+            let servicesValue: IService[] | undefined = undefined;
 
-            if (selectedCategory === 'image_gallery') {
-                postPayload.content = '';
-                postPayload.page = 'gallery';
-            } else if (selectedCategory === 'service') {
-                postPayload.content = '';
-                postPayload.page = 'services';
-                postPayload.services = postData.services || [];
+            if (selectedCategory === APP_KEY_VALUES.image_gallery_category) {
+                contentValue = '';
+                pageValue = APP_KEY_VALUES.gallery_page as IPost['page'];
+            } else if (selectedCategory === APP_KEY_VALUES.service_category) {
+                contentValue = '';
+                pageValue = APP_KEY_VALUES.services_page as IPost['page'];
+                servicesValue = postData.services || [];
             } else {
-                postPayload.content = postData.content || '';
-                postPayload.page = selectedPage;
+                contentValue = postData.content || '';
+                pageValue = selectedPage;
             }
+
+            const postPayload: IPost = {
+                category: selectedCategory,
+                content: contentValue,
+                page: pageValue,
+                createdAt: new Date().toISOString(),
+                images: imageUrls,
+                ...(servicesValue && { services: servicesValue })
+            };
 
             const docId = await this.addDocument(APP_KEY_VALUES.posts_collection, postPayload);
             return docId;
@@ -100,7 +107,7 @@ export class FirebaseService {
         }
     }
 
-    public async deleteImageFile(fileUrl: string) {
+    public async deleteImageFile(fileUrl: string): Promise<void> {
         try {
             const fileRef = ref(this._storage, fileUrl);
             await deleteObject(fileRef);
