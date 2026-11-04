@@ -15,29 +15,17 @@
     </div>
   </header>
 
-  <!-- Dynamic Gallery Grid -->
+  <!-- Dynamic Gallery Slider Component -->
   <section class="container py-4 mb-5">
-    <div class="row g-4">
-      @for (post of galleryPosts$ | async; track post.id) {
+    @let allGalleryImages = (galleryPosts$ | async) || [];
+    @if (allGalleryImages.length > 0) {
+      @for (post of allGalleryImages; track post.id) {
         @if (post.images && post.images.length > 0) {
-          @for (img of post.images; track getImageUrl(img)) {
-            @if (!isImageHidden(img)) {
-              <div class="col-md-4 col-sm-6">
-                <div
-                  class="gallery-card position-relative overflow-hidden rounded shadow-sm"
-                  style="height: 320px"
-                >
-                  <img
-                    [src]="getImageUrl(img)"
-                    alt="Salon transformation"
-                    class="w-100 h-100 object-fit-cover transition-transform"
-                  />
-                </div>
-              </div>
-            }
-          }
+          <app-image-slider [images]="post.images" cardHeight="350px"></app-image-slider>
         }
       }
-    </div>
+    } @else {
+      <p class="text-muted text-center">No gallery images available.</p>
+    }
   </section>
 </div>

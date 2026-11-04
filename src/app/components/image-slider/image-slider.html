@@ -1,0 +1,51 @@
+<div class="slider-wrapper position-relative">
+  <!-- Left Scroll Arrow -->
+  <button
+    type="button"
+    class="slider-arrow slider-arrow-left"
+    aria-label="Scroll left"
+    (click)="scroll('left')"
+  >
+    &lsaquo;
+  </button>
+
+  <!-- Scrollable Container -->
+  <div class="image-slider" #sliderContainer>
+    @for (img of images; track getImageUrl(img)) {
+      @if (!isImageHidden(img)) {
+        <div class="slider-item">
+          <div class="slider-card" [style.height]="cardHeight" (click)="openLightbox(img)">
+            <img
+              [src]="getImageUrl(img)"
+              alt="Portfolio transformation"
+              class="slider-img clickable"
+            />
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Right Scroll Arrow -->
+  <button
+    type="button"
+    class="slider-arrow slider-arrow-right"
+    aria-label="Scroll right"
+    (click)="scroll('right')"
+  >
+    &rsaquo;
+  </button>
+</div>
+
+<!-- Lightbox Modal Overlay -->
+<!-- Lightbox Modal Overlay -->
+@if (activeImage()) {
+  <div class="lightbox-backdrop" (click)="closeLightbox()">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <button type="button" class="lightbox-close" aria-label="Close" (click)="closeLightbox()">
+        &times;
+      </button>
+      <img [src]="activeImage()" alt="Enlarged view" class="lightbox-img img-fluid rounded" />
+    </div>
+  </div>
+}
