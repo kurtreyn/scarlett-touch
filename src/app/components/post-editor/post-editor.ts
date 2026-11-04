@@ -1,4 +1,5 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -19,6 +20,7 @@ export class PostEditor {
   private _fb = inject(FormBuilder);
   private _toastr = inject(ToastrService);
   private _modalService = inject(ModalService);
+  private _destroyRef = inject(DestroyRef);
 
   @Input() public posts: IPost[] | null = [];
 
@@ -44,7 +46,9 @@ export class PostEditor {
       });
 
       // Dynamically handle validation and field state changes when category switches
-      this._editForms[postId].get('category')?.valueChanges.subscribe(cat => {
+      this._editForms[postId].get('category')?.valueChanges.pipe(
+        takeUntilDestroyed(this._destroyRef)
+      ).subscribe(cat => {
         const contentControl = this._editForms[postId].get('content');
         const pageControl = this._editForms[postId].get('page');
         const serviceNameControl = this._editForms[postId].get('serviceName');
