@@ -7,14 +7,16 @@
 
     <div class="mobile-links">
       @for (link of navLinks; track link.label) {
-        <a
-          [routerLink]="link.route"
-          (click)="closeMenu()"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          {{ link.label }}
-        </a>
+        @if (canShowLink()(link)) {
+          <a
+            [routerLink]="link.route"
+            (click)="closeMenu()"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            {{ link.label }}
+          </a>
+        }
       }
     </div>
   </div>

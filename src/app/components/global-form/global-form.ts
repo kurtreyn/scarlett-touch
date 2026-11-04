@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormService } from '../../services/forms/form-service';
@@ -14,6 +15,7 @@ import { IFormType } from '../../models/state.interface';
 export class GlobalForm implements OnInit {
   private _fb = inject(FormBuilder);
   private _formService = inject(FormService);
+  private _destroyRef = inject(DestroyRef);
 
   @Input() public formType: IFormType['formType'] = 'post';
 
@@ -62,7 +64,9 @@ export class GlobalForm implements OnInit {
         });
 
         // Track category changes to toggle visibility and validators dynamically
-        this.form.get('category')?.valueChanges.subscribe(category => {
+        this.form.get('category')?.valueChanges.pipe(
+          takeUntilDestroyed(this._destroyRef)
+        ).subscribe(category => {
           this.selectedCategory = category;
           const contentControl = this.form.get('content');
           const pageControl = this.form.get('page');
