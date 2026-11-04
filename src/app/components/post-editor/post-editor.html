@@ -61,33 +61,24 @@
           <label class="form-label small text-muted"
             >Images (Click X to remove, check to hide):</label
           >
-          <div class="thumbnail-grid d-flex flex-wrap gap-2 mb-3">
+          <div class="thumbnail-grid">
             @for (img of post.images; track getImageUrl(img); let i = $index) {
-              <div class="thumbnail-wrapper position-relative" style="width: 75px; height: 105px">
+              <div class="thumbnail-wrapper">
                 <img
                   [src]="getImageUrl(img)"
                   alt="Thumbnail"
-                  class="w-100 rounded border object-fit-cover"
-                  style="height: 70px"
+                  class="thumbnail-img rounded border"
                 />
                 <button
                   type="button"
-                  class="delete-photo-btn position-absolute badge rounded-pill bg-danger border-0 d-flex align-items-center justify-content-center p-0"
-                  style="
-                    top: 4px;
-                    right: 4px;
-                    width: 18px;
-                    height: 18px;
-                    font-size: 11px;
-                    cursor: pointer;
-                  "
+                  class="delete-photo-btn badge rounded-pill"
                   title="Remove image"
                   (click)="removeImage(post, i)"
                   [disabled]="isLoading()"
                 >
                   &times;
                 </button>
-                <div class="form-check mt-1 text-center">
+                <div class="form-check">
                   <input
                     type="checkbox"
                     class="form-check-input"
@@ -95,7 +86,7 @@
                     (change)="toggleImageHide(post, i, $event)"
                     title="Hide image"
                   />
-                  <small class="d-block text-muted" style="font-size: 9px">Hide</small>
+                  <small class="hide-label">Hide</small>
                 </div>
               </div>
             }
