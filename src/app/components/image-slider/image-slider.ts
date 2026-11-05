@@ -1,5 +1,6 @@
-import { Component, Input, ViewChild, ElementRef, signal } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GeneralService } from '../../services/general/general-service';
 import { IImage } from '../../models/state.interface';
 
 @Component({
@@ -10,6 +11,7 @@ import { IImage } from '../../models/state.interface';
   styleUrl: './image-slider.scss',
 })
 export class ImageSlider {
+  private _generalService = inject(GeneralService);
   @Input() public images: (string | IImage)[] = [];
   @Input() public cardHeight: string = '350px';
 
@@ -27,13 +29,11 @@ export class ImageSlider {
   }
 
   public getImageUrl(img: string | IImage): string {
-    if (!img) return '';
-    return typeof img === 'string' ? img : (img.url || '');
+    return this._generalService.getImageUrl(img);
   }
 
   public isImageHidden(img: string | IImage): boolean {
-    if (!img || typeof img === 'string') return false;
-    return !!img.hide;
+    return this._generalService.isImageHidden(img);
   }
 
   public openLightbox(img: string | IImage) {

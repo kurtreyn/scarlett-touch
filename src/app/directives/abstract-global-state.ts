@@ -1,6 +1,7 @@
 import { Directive, OnInit, OnDestroy, OnChanges, inject, signal } from '@angular/core';
 import { FirebaseService } from '../services/firebase/firebase-service';
 import { GlobalStateService } from '../services/global-state/global-state-service';
+import { GeneralService } from '../services/general/general-service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { take, map } from 'rxjs/operators';
@@ -11,11 +12,13 @@ import { IPost, IImage } from '../models/state.interface';
 @Directive({
   selector: '[appAbstractGlobalState]',
 })
-export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
+export class AbstractGlobalState implements OnInit, OnDestroy {
   private _globalStateService = inject(GlobalStateService);
   private _firebaseService = inject(FirebaseService);
+  private _generalService = inject(GeneralService);
   private _toastr = inject(ToastrService);
   private _router = inject(Router);
+
 
   public isLoading = signal(false);
   public posts$: Observable<IPost[]> = new Observable<IPost[]>();
@@ -26,16 +29,15 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public homePageAnnouncements$: Observable<IPost[]> = new Observable<IPost[]>();
 
-  // Helper methods available to any component extending this directive
   public getImageUrl(img: string | IImage): string {
-    if (!img) return '';
-    return typeof img === 'string' ? img : (img.url || '');
+    return this._generalService.getImageUrl(img);
   }
 
   public isImageHidden(img: string | IImage): boolean {
-    if (!img || typeof img === 'string') return false;
-    return !!img.hide;
+    return this._generalService.isImageHidden(img);
   }
+
+
 
   public logout() {
     this.isLoading.set(true);
@@ -49,7 +51,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  ngOnChanges(): void { }
 
   ngOnInit(): void {
     this._globalStateService.currentUser$.pipe(
