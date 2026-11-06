@@ -1,0 +1,69 @@
+<div class="image-viewer-container">
+  @if (viewMode === 'slider') {
+    <!-- Slider View -->
+    <div class="slider-wrapper position-relative">
+      <button
+        type="button"
+        class="slider-arrow slider-arrow-left"
+        aria-label="Scroll left"
+        (click)="scroll('left')"
+      >
+        &lsaquo;
+      </button>
+
+      <div class="image-slider" #sliderContainer>
+        @for (img of images; track img.url) {
+          @if (!img.hide) {
+            <div class="slider-item">
+              <div class="slider-card" [style.height]="cardHeight" (click)="openLightbox(img)">
+                <img [src]="img.url" alt="Portfolio transformation" class="slider-img clickable" />
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <button
+        type="button"
+        class="slider-arrow slider-arrow-right"
+        aria-label="Scroll right"
+        (click)="scroll('right')"
+      >
+        &rsaquo;
+      </button>
+    </div>
+  } @else {
+    <!-- Grid View -->
+    <div class="row g-4">
+      @for (img of images; track img.url) {
+        @if (!img.hide) {
+          <div class="col-md-4 col-sm-6">
+            <div
+              class="grid-card position-relative overflow-hidden rounded shadow-sm clickable"
+              [style.height]="cardHeight"
+              (click)="openLightbox(img)"
+            >
+              <img
+                [src]="img.url"
+                alt="Portfolio transformation"
+                class="w-100 h-100 object-fit-cover grid-img"
+              />
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Lightbox Modal Overlay -->
+  @if (activeImage()) {
+    <div class="lightbox-backdrop" (click)="closeLightbox()">
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <button type="button" class="lightbox-close" aria-label="Close" (click)="closeLightbox()">
+          &times;
+        </button>
+        <img [src]="activeImage()" alt="Enlarged view" class="lightbox-img img-fluid rounded" />
+      </div>
+    </div>
+  }
+</div>

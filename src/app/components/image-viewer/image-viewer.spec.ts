@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImageSlider } from './image-slider';
+import { ImageViewer } from './image-viewer';
 
-describe('ImageSlider', () => {
-  let component: ImageSlider;
-  let fixture: ComponentFixture<ImageSlider>;
+describe('ImageViewer', () => {
+  let component: ImageViewer;
+  let fixture: ComponentFixture<ImageViewer>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImageSlider],
+      imports: [ImageViewer],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ImageSlider);
+    fixture = TestBed.createComponent(ImageViewer);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

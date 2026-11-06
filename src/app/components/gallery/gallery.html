@@ -15,13 +15,17 @@
     </div>
   </header>
 
-  <!-- Dynamic Gallery Slider Component -->
+  <!-- Dynamic Gallery Image Viewer (Slider / Grid Toggle) -->
   <section class="container py-4 mb-5">
     @let allGalleryImages = (galleryPosts$ | async) || [];
     @if (allGalleryImages.length > 0) {
       @for (post of allGalleryImages; track post.id) {
         @if (post.images && post.images.length > 0) {
-          <app-image-slider [images]="post.images" cardHeight="350px"></app-image-slider>
+          <app-image-viewer
+            [images]="post.images"
+            cardHeight="350px"
+            viewMode="grid"
+          ></app-image-viewer>
         }
       }
     } @else {
