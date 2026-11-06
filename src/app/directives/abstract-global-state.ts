@@ -29,15 +29,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public homePageAnnouncements$: Observable<IPost[]> = new Observable<IPost[]>();
 
-  public getImageUrl(img: string | IImage): string {
-    return this._generalService.getImageUrl(img);
-  }
-
-  public isImageHidden(img: string | IImage): boolean {
-    return this._generalService.isImageHidden(img);
-  }
-
-
 
   public logout() {
     this.isLoading.set(true);
@@ -60,6 +51,9 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
     });
 
     this._loadPosts();
+    this.posts$.pipe(take(1)).subscribe(posts => {
+      console.log('All posts:', posts);
+    });
   }
 
   ngOnDestroy(): void { }
