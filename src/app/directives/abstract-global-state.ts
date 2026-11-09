@@ -20,7 +20,7 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
   private _router = inject(Router);
 
 
-  public isLoading = signal(false);
+  public isLoading = signal(true);
   public posts$: Observable<IPost[]> = new Observable<IPost[]>();
 
   // Centralized derived streams for pages

@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Nav } from '../nav/nav';
 import { AbstractGlobalState } from '../../directives/abstract-global-state';
+import { LoadingScreen } from '../loading-screen/loading-screen';
 import { IMAGE_RESOURCE_MAP } from '../../../config/resourceMap';
 
 @Component({
-  imports: [CommonModule, Nav],
+  imports: [CommonModule, Nav, LoadingScreen],
   selector: 'app-about',
   styleUrl: './about.scss',
   templateUrl: './about.html',
