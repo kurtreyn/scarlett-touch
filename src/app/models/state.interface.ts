@@ -46,6 +46,24 @@ export interface IService {
     image?: IImage;
 }
 
+export interface IContentBlock {
+    eyebrow?: string;       // e.g. "VISUAL PORTFOLIO" or "BESPOKE HAIR ARTISTRY"
+    title?: string;         // e.g. "The Gallery" or "The Art of Elegance"
+    subtitle?: string;      // Optional subheading
+    description?: string;   // Main paragraph text or intro
+    paragraphs?: string[];  // For sections with multiple paragraphs (e.g. About page blocks)
+    image?: string;         // Optional image URL if content is paired with media
+}
+
+export interface IPageContent {
+    hero: IContentBlock;          // Standard top hero section present on all pages
+    sections?: IContentBlock[];   // Additional page-specific body sections (optional)
+}
+
+export type PageContentType = 'about' | 'gallery' | 'services' | 'home';
+
+export type IPgTextContentRecord = Record<PageContentType, IPageContent>;
+
 
 /*
 image_gallery post payload:

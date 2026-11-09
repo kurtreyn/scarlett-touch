@@ -7,13 +7,12 @@
     <!-- Hero Header -->
     <header class="luxury-hero text-center py-5 mt-5">
       <div class="container py-4">
-        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold"
-          >Exclusive Menu</span
-        >
-        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">Salon Services & Pricing</h1>
+        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+          content.hero.eyebrow
+        }}</span>
+        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
         <p class="lead text-muted mx-auto">
-          Indulge in our curated selection of precision cuts, dimensional coloring, and restorative
-          hair treatments.
+          {{ content.hero.description }}
         </p>
       </div>
     </header>
@@ -24,7 +23,6 @@
         @for (post of servicesPosts$ | async; track post.id) {
           <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm p-4 bg-white">
-              <!-- Render individual services defined in the post -->
               @if (post.services && post.services.length > 0) {
                 @for (service of post.services; track service.name) {
                   <div class="mb-3">
@@ -35,11 +33,9 @@
                   </div>
                 }
               } @else {
-                <!-- Fallback content if standard post text is used -->
                 <p class="text-muted">{{ post.content }}</p>
               }
 
-              <!-- Attached Service Imagery -->
               @if (post.images && post.images.length > 0) {
                 <div class="mt-3">
                   @for (img of post.images; track img.url) {

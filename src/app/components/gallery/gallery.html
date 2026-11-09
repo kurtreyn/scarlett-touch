@@ -7,13 +7,12 @@
     <!-- Hero Header -->
     <header class="luxury-hero text-center py-5 mt-5">
       <div class="container py-4">
-        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold"
-          >Visual Portfolio</span
-        >
-        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">The Gallery</h1>
+        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+          content.hero.eyebrow
+        }}</span>
+        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
         <p class="lead text-muted mx-auto" style="max-width: 600px">
-          Explore our signature transformations, vibrant balayage artistry, and precision styling
-          creations.
+          {{ content.hero.description }}
         </p>
       </div>
     </header>
