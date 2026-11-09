@@ -7,11 +7,16 @@
         <option value="announcement">Announcement</option>
         <option value="image_gallery">Image Gallery</option>
         <option value="service">Service</option>
+        <option value="page_text">Page Text Content</option>
       </select>
     </div>
 
     <!-- Content & Page: Shown for General & Announcement -->
-    @if (selectedCategory() !== 'image_gallery' && selectedCategory() !== 'service') {
+    @if (
+      selectedCategory() !== 'image_gallery' &&
+      selectedCategory() !== 'service' &&
+      selectedCategory() !== 'page_text'
+    ) {
       <div class="mb-2">
         <label class="form-label small fw-bold">Content:</label>
         <textarea
@@ -44,6 +49,78 @@
           rows="2"
           formControlName="serviceDescription"
         ></textarea>
+      </div>
+    }
+
+    <!-- Page Text Content Fields: Shown only when category is page_text -->
+    @if (selectedCategory() === 'page_text') {
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Target Page:</label>
+        <select class="form-select form-select-sm" formControlName="page">
+          <option value="about">About</option>
+          <option value="services">Services</option>
+          <option value="gallery">Gallery</option>
+          <option value="home">Home</option>
+        </select>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Eyebrow:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="heroEyebrow" />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Title:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="heroTitle" />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Description:</label>
+        <textarea
+          class="form-control form-control-sm"
+          rows="2"
+          formControlName="heroDescription"
+        ></textarea>
+      </div>
+
+      <!-- Section Title Input -->
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Body Section Title:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="sectionTitle" />
+      </div>
+
+      <!-- Dynamic Body Paragraphs FormArray -->
+      <hr class="my-2" />
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label small fw-bold mb-0">Body Paragraphs:</label>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary py-0 px-2"
+          (click)="addParagraph()"
+        >
+          + Add Paragraph
+        </button>
+      </div>
+
+      <div formArrayName="paragraphs" class="d-flex flex-column gap-2 mb-3">
+        @for (paraControl of paragraphsControls; track $index; let i = $index) {
+          <div class="d-flex gap-2 align-items-center">
+            <textarea
+              [formControlName]="i"
+              rows="2"
+              class="form-control form-control-sm mb-0"
+              placeholder="Paragraph text..."
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger py-0 px-2"
+              (click)="removeParagraph(i)"
+              title="Remove paragraph"
+            >
+              &times;
+            </button>
+          </div>
+        }
       </div>
     }
 

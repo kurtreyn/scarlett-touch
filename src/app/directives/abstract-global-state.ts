@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { take, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../config/appKeyValues';
-import { IPost } from '../models/state.interface';
+import { PAGE_TEXT_CONTENT } from '../../config/pageTextContent';
+import { IPost, IPageContent } from '../models/state.interface';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
@@ -17,7 +18,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
   private _toastr = inject(ToastrService);
   private _router = inject(Router);
 
-
   public isLoading = signal(true);
   public posts$: Observable<IPost[]> = new Observable<IPost[]>();
 
@@ -27,6 +27,10 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public homePageAnnouncements$: Observable<IPost[]> = new Observable<IPost[]>();
 
+  // Reactive Page Content streams with fallback to default PAGE_TEXT_CONTENT
+  public aboutPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
+  public galleryPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
+  public servicesPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
 
   public async logout() {
     this.isLoading.set(true);
@@ -39,7 +43,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
       this.isLoading.set(false);
     });
   }
-
 
   ngOnInit(): void {
     this._globalStateService.currentUser$.pipe(
@@ -78,6 +81,28 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
         .filter(post => post.category === APP_KEY_VALUES.announcements_category && post.page === APP_KEY_VALUES.home_page)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       )
+    );
+
+    // Page text content resolution streams
+    this.aboutPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'about' || p.page === APP_KEY_VALUES.about_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.about;
+      })
+    );
+
+    this.galleryPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'gallery' || p.page === APP_KEY_VALUES.gallery_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.gallery;
+      })
+    );
+
+    this.servicesPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'services' || p.page === APP_KEY_VALUES.services_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.services;
+      })
     );
 
     this.posts$.pipe(take(1)).subscribe(() => {

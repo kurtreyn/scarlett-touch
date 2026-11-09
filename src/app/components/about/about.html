@@ -4,43 +4,48 @@
   @if (isLoading()) {
     <app-loading-screen></app-loading-screen>
   } @else {
-    <!-- Hero Section -->
-    <header class="luxury-hero text-center py-5 mt-5">
-      <div class="container py-4">
-        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
-          content.hero.eyebrow
-        }}</span>
-        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
-        <p class="lead text-muted mx-auto" style="max-width: 650px">
-          {{ content.hero.description }}
-        </p>
-      </div>
-    </header>
+    @let content = aboutPageContent$ | async;
+    @if (content) {
+      <!-- Hero Section -->
+      <header class="luxury-hero text-center py-5 mt-5">
+        <div class="container py-4">
+          <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+            content.hero.eyebrow
+          }}</span>
+          <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
+          <p class="lead text-muted mx-auto" style="max-width: 650px">
+            {{ content.hero.description }}
+          </p>
+        </div>
+      </header>
 
-    <!-- Brand Philosophy / Story (Iterating over sections) -->
-    @if (content.sections) {
-      @for (section of content.sections; track section.title) {
-        <section class="container py-5">
-          <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-              <h2 class="h1 font-serif fw-bold mb-4">{{ section.title }}</h2>
-              @if (section.paragraphs) {
-                @for (para of section.paragraphs; track para) {
-                  <p class="text-muted mb-3">
-                    {{ para }}
-                  </p>
+      <!-- Brand Philosophy / Story (Iterating over sections) -->
+      @if (content.sections) {
+        @for (section of content.sections; track section.title) {
+          <section class="container py-5">
+            <div class="row align-items-center g-5">
+              <div class="col-lg-6">
+                @if (section.title) {
+                  <h2 class="h1 font-serif fw-bold mb-4">{{ section.title }}</h2>
                 }
-              }
+                @if (section.paragraphs) {
+                  @for (para of section.paragraphs; track para) {
+                    <p class="text-muted mb-3">
+                      {{ para }}
+                    </p>
+                  }
+                }
+              </div>
+              <div class="col-lg-6">
+                <img
+                  [src]="scarlettPicture"
+                  alt="Scarlett portrait"
+                  class="img-fluid rounded object-fit-cover w-100"
+                />
+              </div>
             </div>
-            <div class="col-lg-6">
-              <img
-                [src]="scarlettPicture"
-                alt="Scarlett portrait"
-                class="img-fluid rounded object-fit-cover w-100"
-              />
-            </div>
-          </div>
-        </section>
+          </section>
+        }
       }
     }
 

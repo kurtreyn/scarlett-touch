@@ -4,18 +4,21 @@
   @if (isLoading()) {
     <app-loading-screen></app-loading-screen>
   } @else {
-    <!-- Hero Header -->
-    <header class="luxury-hero text-center py-5 mt-5">
-      <div class="container py-4">
-        <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
-          content.hero.eyebrow
-        }}</span>
-        <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
-        <p class="lead text-muted mx-auto">
-          {{ content.hero.description }}
-        </p>
-      </div>
-    </header>
+    @let content = servicesPageContent$ | async;
+    @if (content) {
+      <!-- Hero Header -->
+      <header class="luxury-hero text-center py-5 mt-5">
+        <div class="container py-4">
+          <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+            content.hero.eyebrow
+          }}</span>
+          <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
+          <p class="lead text-muted mx-auto">
+            {{ content.hero.description }}
+          </p>
+        </div>
+      </header>
+    }
 
     <!-- Dynamic Services Menu Grid -->
     <section class="container py-4 mb-5">

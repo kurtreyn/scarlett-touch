@@ -1,5 +1,7 @@
 .admin {
   // Ensure the main admin row takes available height and allows independent side columns to scroll
+  padding: 1rem;
+
   .flex-row {
     height: calc(100vh - 120px);
     overflow: hidden;

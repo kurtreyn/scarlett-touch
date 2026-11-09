@@ -8,13 +8,18 @@
       <option value="announcement">Announcement</option>
       <option value="general">General</option>
       <option value="service">Service</option>
+      <option value="page_text">Page Text Content</option>
     </select>
     @if (form.get('category')?.invalid && form.get('category')?.touched) {
       <small class="error-text">Please select a post category.</small>
     }
 
     <!-- Content & Page: Shown for General & Announcement -->
-    @if (selectedCategory !== 'image_gallery' && selectedCategory !== 'service') {
+    @if (
+      selectedCategory !== 'image_gallery' &&
+      selectedCategory !== 'service' &&
+      selectedCategory !== 'page_text'
+    ) {
       <label for="content">Post Content:</label>
       <textarea
         id="content"
@@ -54,6 +59,86 @@
       @if (form.get('serviceDescription')?.invalid && form.get('serviceDescription')?.touched) {
         <small class="error-text">Service description is required.</small>
       }
+    }
+
+    <!-- Page Text Content Fields: Shown only when category is page_text -->
+    @if (selectedCategory === 'page_text') {
+      <label for="page-text-target">Target Page:</label>
+      <select id="page-text-target" formControlName="page" class="form-select mb-3">
+        <option value="" disabled selected>Select page to update...</option>
+        <option value="about">About</option>
+        <option value="services">Services</option>
+        <option value="gallery">Gallery</option>
+        <option value="home">Home</option>
+      </select>
+      @if (form.get('page')?.invalid && form.get('page')?.touched) {
+        <small class="error-text">Target page is required.</small>
+      }
+
+      <label for="hero-eyebrow">Hero Eyebrow:</label>
+      <input
+        id="hero-eyebrow"
+        type="text"
+        formControlName="heroEyebrow"
+        placeholder="e.g. BESPOKE HAIR ARTISTRY"
+      />
+
+      <label for="hero-title">Hero Title:</label>
+      <input
+        id="hero-title"
+        type="text"
+        formControlName="heroTitle"
+        placeholder="e.g. The Art of Elegance"
+      />
+      @if (form.get('heroTitle')?.invalid && form.get('heroTitle')?.touched) {
+        <small class="error-text">Hero title is required.</small>
+      }
+
+      <label for="hero-description">Hero Description / Subtitle:</label>
+      <textarea
+        id="hero-description"
+        formControlName="heroDescription"
+        placeholder="Enter main hero description..."
+      ></textarea>
+
+      <!-- Section Title Field -->
+      <hr class="my-3" />
+      <label for="section-title">Body Section Title:</label>
+      <input
+        id="section-title"
+        type="text"
+        formControlName="sectionTitle"
+        placeholder="e.g. A Sanctuary of Style & Renewal"
+      />
+
+      <!-- Dynamic Body Sections / Paragraphs -->
+      <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+        <label class="mb-0 fw-bold">Body Paragraphs (Optional):</label>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addParagraph()">
+          + Add Paragraph
+        </button>
+      </div>
+
+      <div formArrayName="paragraphs" class="flex-col gap-2 mb-3">
+        @for (paraControl of paragraphsControls; track $index; let i = $index) {
+          <div class="d-flex gap-2 align-items-center mb-2">
+            <textarea
+              [formControlName]="i"
+              placeholder="Enter section paragraph..."
+              rows="2"
+              class="form-control form-control-sm mb-0"
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              (click)="removeParagraph(i)"
+              title="Remove paragraph"
+            >
+              &times;
+            </button>
+          </div>
+        }
+      </div>
     }
 
     <!-- Image Upload: Shown for Image Gallery or Service -->

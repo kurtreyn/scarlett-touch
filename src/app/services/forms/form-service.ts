@@ -22,12 +22,27 @@ export class FormService {
                         description: formData.serviceDescription || ''
                     }] : undefined;
 
+                    const pageContent = formData.category === 'page_text' ? {
+                        hero: {
+                            eyebrow: formData.heroEyebrow || '',
+                            title: formData.heroTitle || '',
+                            description: formData.heroDescription || ''
+                        },
+                        sections: (formData.sectionTitle || (formData.paragraphs && formData.paragraphs.length > 0)) ? [
+                            {
+                                title: formData.sectionTitle || '',
+                                paragraphs: formData.paragraphs || []
+                            }
+                        ] : undefined
+                    } : undefined;
+
                     await this._firebaseService.submitPost({
                         category: formData.category,
                         content: formData.content,
                         page: formData.page,
                         services: services,
-                        files: formData.imageInput
+                        files: formData.imageInput,
+                        pageContent: pageContent
                     });
                     this._toastr.success('Post successfully created!', 'Success');
                 } catch (error) {

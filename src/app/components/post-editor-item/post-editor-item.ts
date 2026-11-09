@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { FirebaseService } from '../../services/firebase/firebase-service';
 import { ModalService } from '../../services/modal-service/modal-service';
@@ -29,19 +29,46 @@ export class PostEditorItem implements OnInit {
   public form!: FormGroup;
   private _selectedNewFiles: File[] = [];
 
+  public get paragraphsFormArray(): FormArray {
+    return this.form.get('paragraphs') as FormArray;
+  }
+
+  public get paragraphsControls() {
+    return this.paragraphsFormArray.controls;
+  }
+
+  public addParagraph(text: string = '') {
+    this.paragraphsFormArray.push(this._fb.control(text));
+  }
+
+  public removeParagraph(index: number) {
+    this.paragraphsFormArray.removeAt(index);
+  }
+
   public ngOnInit() {
     const category = this.post.category || APP_KEY_VALUES.general_category;
     this.selectedCategory.set(category);
     const isGallery = category === APP_KEY_VALUES.image_gallery_category;
     const isService = category === APP_KEY_VALUES.service_category;
+    const isPageText = category === 'page_text';
     const firstService = isService && this.post.services && this.post.services.length > 0 ? this.post.services[0] : { name: '', description: '' };
+
+    const hero = this.post.pageContent?.hero || { eyebrow: '', title: '', description: '' };
+    const firstSection = this.post.pageContent?.sections && this.post.pageContent.sections.length > 0
+      ? this.post.pageContent.sections[0]
+      : { title: '', paragraphs: [] };
 
     this.form = this._fb.group({
       category: [category, Validators.required],
-      content: [isGallery || isService ? '' : (this.post.content || ''), isGallery || isService ? [] : [Validators.required]],
-      page: [this.post.page || (isGallery ? APP_KEY_VALUES.image_gallery_category : isService ? APP_KEY_VALUES.service_category : APP_KEY_VALUES.about_page), isGallery || isService ? [] : [Validators.required]],
+      content: [isGallery || isService || isPageText ? '' : (this.post.content || ''), (isGallery || isService || isPageText) ? [] : [Validators.required]],
+      page: [this.post.page || (isGallery ? APP_KEY_VALUES.image_gallery_category : isService ? APP_KEY_VALUES.service_category : APP_KEY_VALUES.about_page), (isGallery || isService) ? [] : [Validators.required]],
       serviceName: [isService ? firstService.name : ''],
-      serviceDescription: [isService ? firstService.description : '']
+      serviceDescription: [isService ? firstService.description : ''],
+      heroEyebrow: [isPageText ? hero.eyebrow : ''],
+      heroTitle: [isPageText ? hero.title : '', isPageText ? [Validators.required] : []],
+      heroDescription: [isPageText ? hero.description : ''],
+      sectionTitle: [isPageText ? firstSection.title : ''],
+      paragraphs: this._fb.array((firstSection.paragraphs || []).map(p => this._fb.control(p)))
     });
 
     this.form.get('category')?.valueChanges.pipe(
@@ -52,11 +79,13 @@ export class PostEditorItem implements OnInit {
       const pageControl = this.form.get('page');
       const serviceNameControl = this.form.get('serviceName');
       const serviceDescControl = this.form.get('serviceDescription');
+      const heroTitleControl = this.form.get('heroTitle');
 
       contentControl?.clearValidators();
       pageControl?.clearValidators();
       serviceNameControl?.clearValidators();
       serviceDescControl?.clearValidators();
+      heroTitleControl?.clearValidators();
 
       if (cat === APP_KEY_VALUES.image_gallery_category) {
         contentControl?.setValue('');
@@ -66,6 +95,10 @@ export class PostEditorItem implements OnInit {
         pageControl?.setValue(APP_KEY_VALUES.service_category);
         serviceNameControl?.setValidators([Validators.required]);
         serviceDescControl?.setValidators([Validators.required]);
+      } else if (cat === 'page_text') {
+        contentControl?.setValue('');
+        pageControl?.setValidators([Validators.required]);
+        heroTitleControl?.setValidators([Validators.required]);
       } else {
         contentControl?.setValidators([Validators.required]);
         pageControl?.setValidators([Validators.required]);
@@ -75,6 +108,7 @@ export class PostEditorItem implements OnInit {
       pageControl?.updateValueAndValidity();
       serviceNameControl?.updateValueAndValidity();
       serviceDescControl?.updateValueAndValidity();
+      heroTitleControl?.updateValueAndValidity();
     });
   }
 
@@ -152,24 +186,41 @@ export class PostEditorItem implements OnInit {
 
         const updatedData: any = {
           category: category,
-          images: updatedImages
+          images: updatedImages,
+          page: this.form.value.page
         };
 
         if (category === APP_KEY_VALUES.image_gallery_category) {
           updatedData.content = '';
-          updatedData.page = APP_KEY_VALUES.image_gallery_category;
           delete updatedData.services;
+          delete updatedData.pageContent;
         } else if (category === APP_KEY_VALUES.service_category) {
           updatedData.content = '';
-          updatedData.page = APP_KEY_VALUES.service_category;
           updatedData.services = [{
             name: this.form.value.serviceName,
             description: this.form.value.serviceDescription
           }];
+          delete updatedData.pageContent;
+        } else if (category === 'page_text') {
+          updatedData.content = '';
+          updatedData.pageContent = {
+            hero: {
+              eyebrow: this.form.value.heroEyebrow || '',
+              title: this.form.value.heroTitle || '',
+              description: this.form.value.heroDescription || ''
+            },
+            sections: (this.form.value.sectionTitle || (this.form.value.paragraphs && this.form.value.paragraphs.length > 0)) ? [
+              {
+                title: this.form.value.sectionTitle || '',
+                paragraphs: this.form.value.paragraphs || []
+              }
+            ] : undefined
+          };
+          delete updatedData.services;
         } else {
           updatedData.content = this.form.value.content;
-          updatedData.page = this.form.value.page;
           delete updatedData.services;
+          delete updatedData.pageContent;
         }
 
         await this._firebaseService.updateDocument(
@@ -178,6 +229,7 @@ export class PostEditorItem implements OnInit {
           updatedData
         );
         this.post.images = updatedImages;
+        this.post.pageContent = updatedData.pageContent;
         this._toastr.success('Post successfully updated!', 'Success');
       } catch (error) {
         console.error('Error updating post:', error);

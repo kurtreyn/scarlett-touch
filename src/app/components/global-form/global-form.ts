@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FormService } from '../../services/forms/form-service';
 import { IFormType } from '../../models/state.interface';
 
@@ -25,6 +25,22 @@ export class GlobalForm implements OnInit {
 
   public ngOnInit() {
     this._buildForm();
+  }
+
+  public get paragraphsFormArray(): FormArray {
+    return this.form.get('paragraphs') as FormArray;
+  }
+
+  public get paragraphsControls() {
+    return this.paragraphsFormArray.controls;
+  }
+
+  public addParagraph(text: string = '') {
+    this.paragraphsFormArray.push(this._fb.control(text));
+  }
+
+  public removeParagraph(index: number) {
+    this.paragraphsFormArray.removeAt(index);
   }
 
   private _buildForm() {
@@ -60,10 +76,14 @@ export class GlobalForm implements OnInit {
           page: ['', [Validators.required]],
           serviceName: [''],
           serviceDescription: [''],
-          imageInput: [[]]
+          imageInput: [[]],
+          heroEyebrow: [''],
+          heroTitle: [''],
+          heroDescription: [''],
+          sectionTitle: [''],
+          paragraphs: this._fb.array([])
         });
 
-        // Track category changes to toggle visibility and validators dynamically
         this.form.get('category')?.valueChanges.pipe(
           takeUntilDestroyed(this._destroyRef)
         ).subscribe(category => {
@@ -72,15 +92,15 @@ export class GlobalForm implements OnInit {
           const pageControl = this.form.get('page');
           const serviceNameControl = this.form.get('serviceName');
           const serviceDescControl = this.form.get('serviceDescription');
+          const heroTitleControl = this.form.get('heroTitle');
 
-          // Reset validators
           contentControl?.clearValidators();
           pageControl?.clearValidators();
           serviceNameControl?.clearValidators();
           serviceDescControl?.clearValidators();
+          heroTitleControl?.clearValidators();
 
           if (category === 'image_gallery') {
-            // Fill in behind the scenes for image gallery so validation passes
             contentControl?.setValue('');
             pageControl?.setValue('gallery');
           } else if (category === 'service') {
@@ -88,6 +108,11 @@ export class GlobalForm implements OnInit {
             pageControl?.setValue('services');
             serviceNameControl?.setValidators([Validators.required]);
             serviceDescControl?.setValidators([Validators.required]);
+          } else if (category === 'page_text') {
+            contentControl?.setValue('');
+            pageControl?.setValue('');
+            pageControl?.setValidators([Validators.required]);
+            heroTitleControl?.setValidators([Validators.required]);
           } else {
             contentControl?.setValidators([Validators.required]);
             pageControl?.setValidators([Validators.required]);
@@ -97,6 +122,7 @@ export class GlobalForm implements OnInit {
           pageControl?.updateValueAndValidity();
           serviceNameControl?.updateValueAndValidity();
           serviceDescControl?.updateValueAndValidity();
+          heroTitleControl?.updateValueAndValidity();
         });
 
         this.buttonText = 'Submit Post';
@@ -116,6 +142,7 @@ export class GlobalForm implements OnInit {
     if (this.form.valid) {
       this._formService.submitForm(this.formType, this.form.value);
       this.form.reset();
+      this.paragraphsFormArray.clear();
       this.selectedCategory = '';
     } else {
       this.form.markAllAsTouched();
