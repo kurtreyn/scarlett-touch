@@ -3,9 +3,9 @@ export interface IFormType {
 }
 
 export interface IFormData {
-    category?: 'general' | 'announcement' | 'image_gallery' | 'service';
+    category?: 'general' | 'announcement' | 'image_gallery' | 'service' | 'page_text';
     content?: string;
-    page?: 'about' | 'services' | 'gallery';
+    page?: 'about' | 'services' | 'gallery' | 'home';
     serviceName?: string;
     serviceDescription?: string;
     imageInput?: File[];
@@ -17,6 +17,12 @@ export interface IFormData {
     contactName?: string;
     contactEmail?: string;
     contactMessage?: string;
+    // Page text content fields
+    heroEyebrow?: string;
+    heroTitle?: string;
+    heroDescription?: string;
+    sectionTitle?: string;
+    paragraphs?: string[];
 }
 
 export interface ILogin {
@@ -32,12 +38,13 @@ export interface IImage {
 
 export interface IPost {
     id?: string;
-    category: 'general' | 'announcement' | 'image_gallery' | 'service';
+    category: 'general' | 'announcement' | 'image_gallery' | 'service' | 'page_text';
     content?: string;
     images?: IImage[];
     createdAt: Date | string;
-    page: 'about' | 'services' | 'gallery';
+    page: 'about' | 'services' | 'gallery' | 'home';
     services?: IService[];
+    pageContent?: IPageContent; // Stored structured content for page_text
 }
 
 export interface IService {
@@ -45,6 +52,25 @@ export interface IService {
     description: string;
     image?: IImage;
 }
+
+export interface IContentBlock {
+    eyebrow?: string;       // e.g. "VISUAL PORTFOLIO" or "BESPOKE HAIR ARTISTRY"
+    title?: string;         // e.g. "The Gallery" or "The Art of Elegance"
+    subtitle?: string;      // Optional subheading
+    description?: string;   // Main paragraph text or intro
+    sectionTitle?: string;  // Optional title for a specific section within the page
+    paragraphs?: string[];  // For sections with multiple paragraphs (e.g. About page blocks)
+    image?: string;         // Optional image URL if content is paired with media
+}
+
+export interface IPageContent {
+    hero: IContentBlock;          // Standard top hero section present on all pages
+    sections?: IContentBlock[];   // Additional page-specific body sections (optional)
+}
+
+export type PageContentType = 'about' | 'gallery' | 'services' | 'home';
+
+export type IPgTextContentRecord = Record<PageContentType, IPageContent>;
 
 
 /*

@@ -4,7 +4,7 @@ import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } 
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
-import { IImage, IPost, IService } from '../../models/state.interface';
+import { IImage, IPageContent, IPost, IService } from '../../models/state.interface';
 
 @Service()
 export class FirebaseService {
@@ -79,6 +79,7 @@ export class FirebaseService {
         page?: IPost['page'];
         services?: IService[];
         files?: File[];
+        pageContent?: IPageContent;
     }): Promise<string> {
         try {
             const selectedCategory: IPost['category'] = postData.category || (APP_KEY_VALUES.general_category as IPost['category']);
@@ -89,6 +90,7 @@ export class FirebaseService {
             let contentValue = '';
             let pageValue: IPost['page'] = selectedPage;
             let servicesValue: IService[] | undefined = undefined;
+            let pageContentValue: IPageContent | undefined = postData.pageContent;
 
             if (selectedCategory === APP_KEY_VALUES.image_gallery_category) {
                 contentValue = '';
@@ -97,6 +99,9 @@ export class FirebaseService {
                 contentValue = '';
                 pageValue = APP_KEY_VALUES.services_page as IPost['page'];
                 servicesValue = postData.services || [];
+            } else if (selectedCategory === 'page_text') {
+                contentValue = '';
+                pageValue = postData.page || 'home';
             } else {
                 contentValue = postData.content || '';
                 pageValue = selectedPage;
@@ -108,7 +113,8 @@ export class FirebaseService {
                 page: pageValue,
                 createdAt: new Date().toISOString(),
                 images: normalizedImages,
-                ...(servicesValue && { services: servicesValue })
+                ...(servicesValue && { services: servicesValue }),
+                ...(pageContentValue && { pageContent: pageContentValue })
             };
 
             const docId = await this.addDocument(APP_KEY_VALUES.posts_collection, postPayload);
@@ -127,6 +133,10 @@ export class FirebaseService {
         } catch (error) {
             console.error('Error deleting image from Storage:', error);
         }
+    }
+
+    public async uploadImagesDirectly(category: string, files?: File[]): Promise<IImage[]> {
+        return await this._uploadImages(category, files);
     }
 
     private async _uploadImages(category: string, files?: File[]): Promise<IImage[]> {

@@ -1,35 +1,41 @@
 <div class="mt-page luxury-page">
   <app-nav [useDarkLines]="true"></app-nav>
 
-  <!-- Hero Header -->
-  <header class="luxury-hero text-center py-5 mt-5">
-    <div class="container py-4">
-      <span class="subheading text-uppercase tracking-widest text-danger fw-semibold"
-        >Visual Portfolio</span
-      >
-      <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">The Gallery</h1>
-      <p class="lead text-muted mx-auto" style="max-width: 600px">
-        Explore our signature transformations, vibrant balayage artistry, and precision styling
-        creations.
-      </p>
-    </div>
-  </header>
-
-  <!-- Dynamic Gallery Image Viewer (Slider / Grid Toggle) -->
-  <section class="container py-4 mb-5">
-    @let allGalleryImages = (galleryPosts$ | async) || [];
-    @if (allGalleryImages.length > 0) {
-      @for (post of allGalleryImages; track post.id) {
-        @if (post.images && post.images.length > 0) {
-          <app-image-viewer
-            [images]="post.images"
-            cardHeight="350px"
-            viewMode="grid"
-          ></app-image-viewer>
-        }
-      }
-    } @else {
-      <p class="text-muted text-center">No gallery images available.</p>
+  @if (isLoading()) {
+    <app-loading-screen></app-loading-screen>
+  } @else {
+    @let content = galleryPageContent$ | async;
+    @if (content) {
+      <!-- Hero Header -->
+      <header class="luxury-hero text-center py-5 mt-5">
+        <div class="container py-4">
+          <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+            content.hero.eyebrow
+          }}</span>
+          <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
+          <p class="lead text-muted mx-auto" style="max-width: 600px">
+            {{ content.hero.description }}
+          </p>
+        </div>
+      </header>
     }
-  </section>
+
+    <!-- Dynamic Gallery Image Viewer (Slider / Grid Toggle) -->
+    <section class="container py-4 mb-5">
+      @let allGalleryImages = (galleryPosts$ | async) || [];
+      @if (allGalleryImages.length > 0) {
+        @for (post of allGalleryImages; track post.id) {
+          @if (post.images && post.images.length > 0) {
+            <app-image-viewer
+              [images]="post.images"
+              cardHeight="350px"
+              viewMode="grid"
+            ></app-image-viewer>
+          }
+        }
+      } @else {
+        <p class="text-muted text-center">No gallery images available.</p>
+      }
+    </section>
+  }
 </div>

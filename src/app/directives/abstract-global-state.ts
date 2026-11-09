@@ -1,13 +1,13 @@
-import { Directive, OnInit, OnDestroy, OnChanges, inject, signal } from '@angular/core';
+import { Directive, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FirebaseService } from '../services/firebase/firebase-service';
 import { GlobalStateService } from '../services/global-state/global-state-service';
-import { GeneralService } from '../services/general/general-service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { take, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { APP_KEY_VALUES } from '../../config/appKeyValues';
-import { IPost, IImage } from '../models/state.interface';
+import { PAGE_TEXT_CONTENT } from '../../config/pageTextContent';
+import { IPost, IPageContent } from '../models/state.interface';
 
 @Directive({
   selector: '[appAbstractGlobalState]',
@@ -15,12 +15,10 @@ import { IPost, IImage } from '../models/state.interface';
 export class AbstractGlobalState implements OnInit, OnDestroy {
   private _globalStateService = inject(GlobalStateService);
   private _firebaseService = inject(FirebaseService);
-  private _generalService = inject(GeneralService);
   private _toastr = inject(ToastrService);
   private _router = inject(Router);
 
-
-  public isLoading = signal(false);
+  public isLoading = signal(true);
   public posts$: Observable<IPost[]> = new Observable<IPost[]>();
 
   // Centralized derived streams for pages
@@ -29,8 +27,12 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
   public servicesPosts$: Observable<IPost[]> = new Observable<IPost[]>();
   public homePageAnnouncements$: Observable<IPost[]> = new Observable<IPost[]>();
 
+  // Reactive Page Content streams with fallback to default PAGE_TEXT_CONTENT
+  public aboutPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
+  public galleryPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
+  public servicesPageContent$: Observable<IPageContent> = new Observable<IPageContent>();
 
-  public logout() {
+  public async logout() {
     this.isLoading.set(true);
     return this._globalStateService.logout().then(() => {
       this._toastr.success('Logged out successfully', 'Success');
@@ -42,7 +44,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
     });
   }
 
-
   ngOnInit(): void {
     this._globalStateService.currentUser$.pipe(
       take(1)
@@ -51,9 +52,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
     });
 
     this._loadPosts();
-    this.posts$.pipe(take(1)).subscribe(posts => {
-      console.log('All posts:', posts);
-    });
   }
 
   ngOnDestroy(): void { }
@@ -83,6 +81,28 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
         .filter(post => post.category === APP_KEY_VALUES.announcements_category && post.page === APP_KEY_VALUES.home_page)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       )
+    );
+
+    // Page text content resolution streams
+    this.aboutPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'about' || p.page === APP_KEY_VALUES.about_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.about;
+      })
+    );
+
+    this.galleryPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'gallery' || p.page === APP_KEY_VALUES.gallery_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.gallery;
+      })
+    );
+
+    this.servicesPageContent$ = this.posts$.pipe(
+      map(posts => {
+        const customPost = posts.find(p => p.category === 'page_text' && (p.page === 'services' || p.page === APP_KEY_VALUES.services_page));
+        return customPost?.pageContent || PAGE_TEXT_CONTENT.services;
+      })
     );
 
     this.posts$.pipe(take(1)).subscribe(() => {

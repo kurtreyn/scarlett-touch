@@ -3,11 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Nav } from '../nav/nav';
 import { AbstractGlobalState } from '../../directives/abstract-global-state';
 import { ImageViewer } from '../image-viewer/image-viewer';
+import { LoadingScreen } from '../loading-screen/loading-screen';
+import { PAGE_TEXT_CONTENT } from '../../../config/pageTextContent';
 
 @Component({
-  imports: [CommonModule, Nav, ImageViewer],
+  imports: [CommonModule, Nav, ImageViewer, LoadingScreen],
   selector: 'app-gallery',
   styleUrl: './gallery.scss',
   templateUrl: './gallery.html',
 })
-export class Gallery extends AbstractGlobalState { }
+export class Gallery extends AbstractGlobalState {
+  public content = PAGE_TEXT_CONTENT.gallery;
+}

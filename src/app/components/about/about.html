@@ -1,75 +1,87 @@
 <div class="mt-page luxury-page">
   <app-nav [useDarkLines]="true"></app-nav>
 
-  <!-- Hero Section -->
-  <header class="luxury-hero text-center py-5 mt-5">
-    <div class="container py-4">
-      <span class="subheading text-uppercase tracking-widest text-danger fw-semibold"
-        >Bespoke Hair Artistry</span
-      >
-      <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">The Art of Elegance</h1>
-      <p class="lead text-muted mx-auto" style="max-width: 650px">
-        Welcome to The Scarlett Touch, where modern sophistication meets timeless luxury. Our master
-        stylists curate bespoke experiences designed to elevate your natural beauty.
-      </p>
-    </div>
-  </header>
+  @if (isLoading()) {
+    <app-loading-screen></app-loading-screen>
+  } @else {
+    @let content = aboutPageContent$ | async;
+    @if (content) {
+      <!-- Hero Section -->
+      <header class="luxury-hero text-center py-5 mt-5">
+        <div class="container py-4">
+          <span class="subheading text-uppercase tracking-widest text-danger fw-semibold">{{
+            content.hero.eyebrow
+          }}</span>
+          <h1 class="display-3 font-serif fw-bold text-dark mt-2 mb-3">{{ content.hero.title }}</h1>
+          <p class="lead text-muted mx-auto" style="max-width: 650px">
+            {{ content.hero.description }}
+          </p>
+        </div>
+      </header>
 
-  <!-- Brand Philosophy / Story -->
-  <section class="container py-5">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6">
-        <h2 class="h1 font-serif fw-bold mb-4">A Sanctuary of Style & Renewal</h2>
-        <p class="text-muted mb-3">
-          Founded on the principle that hair care is an intimate art form, The Scarlett Touch
-          provides an exclusive sanctuary from the everyday. We combine cutting-edge color
-          techniques with restorative treatments in an atmosphere of serene luxury.
-        </p>
-        <p class="text-muted">
-          Every consultation is tailored to your unique lifestyle and aesthetic vision, ensuring a
-          result that is effortlessly radiant.
-        </p>
-      </div>
-      <div class="col-lg-6">
-        <img
-          [src]="scarlettPicture"
-          alt="Scarlett portrait"
-          class="img-fluid rounded object-fit-cover w-100"
-        />
-      </div>
-    </div>
-  </section>
-
-  <!-- Dynamic About Posts & Announcements -->
-  <section class="container py-5">
-    <h3 class="h2 font-serif text-center mb-5">Latest Journal & Notes</h3>
-    <div class="row g-4">
-      @for (post of aboutPosts$ | async; track post.id) {
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm p-3">
-            @if (post.images && post.images.length > 0) {
-              @let firstVisibleImg = post.images.find((img) => !img.hide);
-              @if (firstVisibleImg) {
+      <!-- Brand Philosophy / Story (Iterating over sections) -->
+      @if (content.sections) {
+        @for (section of content.sections; track section.title) {
+          <section class="container py-5">
+            <div class="row align-items-center g-5">
+              <div class="col-lg-6">
+                @if (section.title) {
+                  <h2 class="h1 font-serif fw-bold mb-4">{{ section.title }}</h2>
+                }
+                @if (section.paragraphs) {
+                  @for (para of section.paragraphs; track para) {
+                    <p class="text-muted mb-3">
+                      {{ para }}
+                    </p>
+                  }
+                }
+              </div>
+              <div class="col-lg-6">
                 <img
-                  [src]="firstVisibleImg.url"
-                  alt="Post image"
-                  class="rounded mb-3 object-fit-cover"
-                  style="height: 220px; width: 100%"
+                  [src]="scarlettPicture"
+                  alt="Scarlett portrait"
+                  class="img-fluid rounded object-fit-cover w-100"
                 />
-              }
-            }
-            <span class="badge bg-light text-danger text-uppercase mb-2 align-self-start">{{
-              post.category
-            }}</span>
-            <p class="text-muted">{{ post.content }}</p>
-            <small class="text-muted mt-auto pt-2">{{ post.createdAt | date: 'mediumDate' }}</small>
-          </div>
-        </div>
-      } @empty {
-        <div class="col-12 text-center">
-          <p class="text-muted">No journal posts available at the moment.</p>
-        </div>
+              </div>
+            </div>
+          </section>
+        }
       }
-    </div>
-  </section>
+    }
+
+    <!-- Dynamic About Posts & Announcements -->
+    <section class="container py-5">
+      <h3 class="h2 font-serif text-center mb-5">Latest Journal & Notes</h3>
+      <div class="row g-4">
+        @for (post of aboutPosts$ | async; track post.id) {
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-3">
+              @if (post.images && post.images.length > 0) {
+                @let firstVisibleImg = post.images.find((img) => !img.hide);
+                @if (firstVisibleImg) {
+                  <img
+                    [src]="firstVisibleImg.url"
+                    alt="Post image"
+                    class="rounded mb-3 object-fit-cover"
+                    style="height: 220px; width: 100%"
+                  />
+                }
+              }
+              <span class="badge bg-light text-danger text-uppercase mb-2 align-self-start">{{
+                post.category
+              }}</span>
+              <p class="text-muted">{{ post.content }}</p>
+              <small class="text-muted mt-auto pt-2">{{
+                post.createdAt | date: 'mediumDate'
+              }}</small>
+            </div>
+          </div>
+        } @empty {
+          <div class="col-12 text-center">
+            <p class="text-muted">No journal posts available at the moment.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
 </div>

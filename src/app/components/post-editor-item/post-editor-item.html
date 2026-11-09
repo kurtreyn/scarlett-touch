@@ -1,0 +1,185 @@
+<div class="post-card card p-3 mb-3 shadow-sm">
+  <form [formGroup]="form" (ngSubmit)="onUpdatePost()">
+    <div class="mb-2">
+      <label class="form-label small fw-bold">Category:</label>
+      <select class="form-select form-select-sm" formControlName="category">
+        <option value="general">General</option>
+        <option value="announcement">Announcement</option>
+        <option value="image_gallery">Image Gallery</option>
+        <option value="service">Service</option>
+        <option value="page_text">Page Text Content</option>
+      </select>
+    </div>
+
+    <!-- Content & Page: Shown for General & Announcement -->
+    @if (
+      selectedCategory() !== 'image_gallery' &&
+      selectedCategory() !== 'service' &&
+      selectedCategory() !== 'page_text'
+    ) {
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Content:</label>
+        <textarea
+          class="form-control form-control-sm"
+          rows="2"
+          formControlName="content"
+        ></textarea>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Page:</label>
+        <select class="form-select form-select-sm" formControlName="page">
+          <option value="about">About</option>
+          <option value="services">Services</option>
+          <option value="home">Home</option>
+        </select>
+      </div>
+    }
+
+    <!-- Service Fields: Shown only when category is service -->
+    @if (selectedCategory() === 'service') {
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Service Name:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="serviceName" />
+      </div>
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Service Description:</label>
+        <textarea
+          class="form-control form-control-sm"
+          rows="2"
+          formControlName="serviceDescription"
+        ></textarea>
+      </div>
+    }
+
+    <!-- Page Text Content Fields: Shown only when category is page_text -->
+    @if (selectedCategory() === 'page_text') {
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Target Page:</label>
+        <select class="form-select form-select-sm" formControlName="page">
+          <option value="about">About</option>
+          <option value="services">Services</option>
+          <option value="gallery">Gallery</option>
+          <option value="home">Home</option>
+        </select>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Eyebrow:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="heroEyebrow" />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Title:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="heroTitle" />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Hero Description:</label>
+        <textarea
+          class="form-control form-control-sm"
+          rows="2"
+          formControlName="heroDescription"
+        ></textarea>
+      </div>
+
+      <!-- Section Title Input -->
+      <div class="mb-2">
+        <label class="form-label small fw-bold">Body Section Title:</label>
+        <input type="text" class="form-control form-control-sm" formControlName="sectionTitle" />
+      </div>
+
+      <!-- Dynamic Body Paragraphs FormArray -->
+      <hr class="my-2" />
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label small fw-bold mb-0">Body Paragraphs:</label>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary py-0 px-2"
+          (click)="addParagraph()"
+        >
+          + Add Paragraph
+        </button>
+      </div>
+
+      <div formArrayName="paragraphs" class="d-flex flex-column gap-2 mb-3">
+        @for (paraControl of paragraphsControls; track $index; let i = $index) {
+          <div class="d-flex gap-2 align-items-center">
+            <textarea
+              [formControlName]="i"
+              rows="2"
+              class="form-control form-control-sm mb-0"
+              placeholder="Paragraph text..."
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger py-0 px-2"
+              (click)="removeParagraph(i)"
+              title="Remove paragraph"
+            >
+              &times;
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (post.images && post.images.length > 0) {
+      <label class="form-label small text-muted">Images (Click X to remove, check to hide):</label>
+      <div class="thumbnail-grid">
+        @for (img of post.images; track img.url; let i = $index) {
+          <div class="thumbnail-wrapper">
+            <img [src]="img.url" alt="Thumbnail" class="thumbnail-img rounded border" />
+            <button
+              type="button"
+              class="delete-photo-btn badge rounded-pill"
+              title="Remove image"
+              (click)="removeImage(i)"
+              [disabled]="isLoading()"
+            >
+              &times;
+            </button>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [checked]="img.hide"
+                (change)="toggleImageHide(i, $event)"
+                title="Hide image"
+              />
+              <small class="hide-label">Hide</small>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Add More Images Input: Shown only for service or image_gallery -->
+    @if (selectedCategory() === 'service' || selectedCategory() === 'image_gallery') {
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-muted">Add More Images:</label>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          class="form-control form-control-sm"
+          (change)="onNewFilesSelected($event)"
+        />
+      </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-danger"
+        (click)="onDeletePost()"
+        [disabled]="isLoading()"
+      >
+        Delete Post
+      </button>
+      <button type="submit" class="btn btn-sm btn-primary" [disabled]="form.invalid || isLoading()">
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
