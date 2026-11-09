@@ -129,6 +129,10 @@ export class FirebaseService {
         }
     }
 
+    public async uploadImagesDirectly(category: string, files?: File[]): Promise<IImage[]> {
+        return await this._uploadImages(category, files);
+    }
+
     private async _uploadImages(category: string, files?: File[]): Promise<IImage[]> {
         if (!files || files.length === 0) {
             return [];

@@ -1,0 +1,38 @@
+.admin {
+  // Ensure the main admin row takes available height and allows independent side columns to scroll
+  .flex-row {
+    height: calc(100vh - 120px);
+    overflow: hidden;
+  }
+
+  .form-area {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 1rem;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 3px;
+    }
+  }
+}
+
+// Ensure the post editor container inside the right column scrolls independently
+.post-editor-container {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 1rem;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+  }
+}
