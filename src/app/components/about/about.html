@@ -48,10 +48,10 @@
         <div class="col-md-4">
           <div class="card h-100 border-0 shadow-sm p-3">
             @if (post.images && post.images.length > 0) {
-              @let firstVisibleImg = post.images.find((img) => !isImageHidden(img));
+              @let firstVisibleImg = post.images.find((img) => !img.hide);
               @if (firstVisibleImg) {
                 <img
-                  [src]="getImageUrl(firstVisibleImg)"
+                  [src]="firstVisibleImg.url"
                   alt="Post image"
                   class="rounded mb-3 object-fit-cover"
                   style="height: 220px; width: 100%"
