@@ -52,6 +52,9 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
     });
 
     this._loadPosts();
+    this.aboutPosts$.pipe(take(1)).subscribe(posts => {
+      console.log('About posts:', posts);
+    });
   }
 
   ngOnDestroy(): void { }
@@ -65,7 +68,7 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
 
     // Initialize derived streams using the centralized state
     this.aboutPosts$ = this.posts$.pipe(
-      map(posts => posts.filter(post => post.page === APP_KEY_VALUES.about_page || post.category === APP_KEY_VALUES.announcements_category || post.category === APP_KEY_VALUES.general_category))
+      map(posts => posts.filter(post => (post.page === APP_KEY_VALUES.about_page && post.category === APP_KEY_VALUES.announcements_category) || post.category === APP_KEY_VALUES.announcements_category))
     );
 
     this.galleryPosts$ = this.posts$.pipe(
