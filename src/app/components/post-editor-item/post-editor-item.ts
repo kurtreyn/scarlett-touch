@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FirebaseService } from '../../services/firebase/firebase-service';
 import { ModalService } from '../../services/modal-service/modal-service';
 import { APP_KEY_VALUES } from '../../../config/appKeyValues';
-import { IPost, IImage } from '../../models/state.interface';
+import { IPost, IImage, IContentBlock } from '../../models/state.interface';
 
 @Component({
   selector: 'app-post-editor-item',
@@ -29,20 +29,41 @@ export class PostEditorItem implements OnInit {
   public form!: FormGroup;
   private _selectedNewFiles: File[] = [];
 
-  public get paragraphsFormArray(): FormArray {
-    return this.form.get('paragraphs') as FormArray;
+  public get sectionsFormArray(): FormArray {
+    return this.form.get('sections') as FormArray;
   }
 
-  public get paragraphsControls() {
-    return this.paragraphsFormArray.controls;
+  public get sectionsControls() {
+    return this.sectionsFormArray.controls;
   }
 
-  public addParagraph(text: string = '') {
-    this.paragraphsFormArray.push(this._fb.control(text));
+  public addSection(title: string = '', paragraphs: string[] = []) {
+    const paragraphControls = paragraphs.map(p => this._fb.control(p));
+    const sectionGroup = this._fb.group({
+      title: [title],
+      paragraphs: this._fb.array(paragraphControls)
+    });
+    this.sectionsFormArray.push(sectionGroup);
   }
 
-  public removeParagraph(index: number) {
-    this.paragraphsFormArray.removeAt(index);
+  public removeSection(index: number) {
+    this.sectionsFormArray.removeAt(index);
+  }
+
+  public getParagraphsFormArray(sectionIndex: number): FormArray {
+    return this.sectionsFormArray.at(sectionIndex).get('paragraphs') as FormArray;
+  }
+
+  public getParagraphsControls(sectionIndex: number) {
+    return this.getParagraphsFormArray(sectionIndex).controls;
+  }
+
+  public addParagraphToSection(sectionIndex: number, text: string = '') {
+    this.getParagraphsFormArray(sectionIndex).push(this._fb.control(text));
+  }
+
+  public removeParagraphFromSection(sectionIndex: number, paragraphIndex: number) {
+    this.getParagraphsFormArray(sectionIndex).removeAt(paragraphIndex);
   }
 
   public ngOnInit() {
@@ -54,9 +75,15 @@ export class PostEditorItem implements OnInit {
     const firstService = isService && this.post.services && this.post.services.length > 0 ? this.post.services[0] : { name: '', description: '' };
 
     const hero = this.post.pageContent?.hero || { eyebrow: '', title: '', description: '' };
-    const firstSection = this.post.pageContent?.sections && this.post.pageContent.sections.length > 0
-      ? this.post.pageContent.sections[0]
-      : { title: '', paragraphs: [] };
+    const sectionsData = this.post.pageContent?.sections || [];
+
+    const sectionGroups = sectionsData.map((sec: IContentBlock) => {
+      const paras = (sec.paragraphs || []).map(p => this._fb.control(p));
+      return this._fb.group({
+        title: [sec.title || ''],
+        paragraphs: this._fb.array(paras)
+      });
+    });
 
     this.form = this._fb.group({
       category: [category, Validators.required],
@@ -67,8 +94,7 @@ export class PostEditorItem implements OnInit {
       heroEyebrow: [isPageText ? hero.eyebrow : ''],
       heroTitle: [isPageText ? hero.title : '', isPageText ? [Validators.required] : []],
       heroDescription: [isPageText ? hero.description : ''],
-      sectionTitle: [isPageText ? firstSection.title : ''],
-      paragraphs: this._fb.array((firstSection.paragraphs || []).map(p => this._fb.control(p)))
+      sections: this._fb.array(sectionGroups)
     });
 
     this.form.get('category')?.valueChanges.pipe(
@@ -209,12 +235,7 @@ export class PostEditorItem implements OnInit {
               title: this.form.value.heroTitle || '',
               description: this.form.value.heroDescription || ''
             },
-            sections: (this.form.value.sectionTitle || (this.form.value.paragraphs && this.form.value.paragraphs.length > 0)) ? [
-              {
-                title: this.form.value.sectionTitle || '',
-                paragraphs: this.form.value.paragraphs || []
-              }
-            ] : undefined
+            sections: this.form.value.sections && this.form.value.sections.length > 0 ? this.form.value.sections : undefined
           };
           delete updatedData.services;
         } else {

@@ -22,6 +22,7 @@ export interface IFormData {
     heroTitle?: string;
     heroDescription?: string;
     sectionTitle?: string;
+    sections?: IContentBlock[];
     paragraphs?: string[];
 }
 

@@ -28,12 +28,7 @@ export class FormService {
                             title: formData.heroTitle || '',
                             description: formData.heroDescription || ''
                         },
-                        sections: (formData.sectionTitle || (formData.paragraphs && formData.paragraphs.length > 0)) ? [
-                            {
-                                title: formData.sectionTitle || '',
-                                paragraphs: formData.paragraphs || []
-                            }
-                        ] : undefined
+                        sections: formData.sections && formData.sections.length > 0 ? formData.sections : undefined
                     } : undefined;
 
                     await this._firebaseService.submitPost({

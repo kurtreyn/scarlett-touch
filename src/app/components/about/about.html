@@ -19,9 +19,9 @@
         </div>
       </header>
 
-      <!-- Brand Philosophy / Story (Iterating over sections) -->
+      <!-- Brand Philosophy / Story (Iterating over multiple sections) -->
       @if (content.sections) {
-        @for (section of content.sections; track section.title) {
+        @for (section of content.sections; track $index) {
           <section class="container py-5">
             <div class="row align-items-center g-5">
               <div class="col-lg-6">
@@ -29,7 +29,7 @@
                   <h2 class="h1 font-serif fw-bold mb-4">{{ section.title }}</h2>
                 }
                 @if (section.paragraphs) {
-                  @for (para of section.paragraphs; track para) {
+                  @for (para of section.paragraphs; track $index) {
                     <p class="text-muted mb-3">
                       {{ para }}
                     </p>
@@ -38,8 +38,8 @@
               </div>
               <div class="col-lg-6">
                 <img
-                  [src]="scarlettPicture"
-                  alt="Scarlett portrait"
+                  [src]="section.image || scarlettPicture"
+                  alt="Section visual"
                   class="img-fluid rounded object-fit-cover w-100"
                 />
               </div>

@@ -83,42 +83,75 @@
         ></textarea>
       </div>
 
-      <!-- Section Title Input -->
-      <div class="mb-2">
-        <label class="form-label small fw-bold">Body Section Title:</label>
-        <input type="text" class="form-control form-control-sm" formControlName="sectionTitle" />
-      </div>
-
-      <!-- Dynamic Body Paragraphs FormArray -->
+      <!-- Multiple Body Sections FormArray Builder -->
       <hr class="my-2" />
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <label class="form-label small fw-bold mb-0">Body Paragraphs:</label>
+        <label class="form-label small fw-bold mb-0">Body Sections:</label>
         <button
           type="button"
           class="btn btn-sm btn-outline-primary py-0 px-2"
-          (click)="addParagraph()"
+          (click)="addSection()"
         >
-          + Add Paragraph
+          + Add Section
         </button>
       </div>
 
-      <div formArrayName="paragraphs" class="d-flex flex-column gap-2 mb-3">
-        @for (paraControl of paragraphsControls; track $index; let i = $index) {
-          <div class="d-flex gap-2 align-items-center">
-            <textarea
-              [formControlName]="i"
-              rows="2"
-              class="form-control form-control-sm mb-0"
-              placeholder="Paragraph text..."
-            ></textarea>
-            <button
-              type="button"
-              class="btn btn-sm btn-outline-danger py-0 px-2"
-              (click)="removeParagraph(i)"
-              title="Remove paragraph"
-            >
-              &times;
-            </button>
+      <div formArrayName="sections" class="d-flex flex-column gap-3 mb-3">
+        @for (sectionGroup of sectionsControls; track $index; let secIndex = $index) {
+          <div [formGroupName]="secIndex" class="card p-2 border bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-muted">Section {{ secIndex + 1 }}</span>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger py-0 px-1"
+                (click)="removeSection(secIndex)"
+              >
+                &times;
+              </button>
+            </div>
+
+            <label class="form-label small fw-bold">Section Title:</label>
+            <input
+              type="text"
+              formControlName="title"
+              class="form-control form-control-sm mb-2"
+              placeholder="Section Title..."
+            />
+
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label small fw-bold mb-0">Paragraphs:</label>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary py-0 px-1"
+                (click)="addParagraphToSection(secIndex)"
+              >
+                + Add Para
+              </button>
+            </div>
+
+            <div formArrayName="paragraphs" class="d-flex flex-column gap-2">
+              @for (
+                paraControl of getParagraphsControls(secIndex);
+                track $index;
+                let pIndex = $index
+              ) {
+                <div class="d-flex gap-2 align-items-center">
+                  <textarea
+                    [formControlName]="pIndex"
+                    rows="2"
+                    class="form-control form-control-sm mb-0"
+                    placeholder="Paragraph text..."
+                  ></textarea>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger py-0 px-1"
+                    (click)="removeParagraphFromSection(secIndex, pIndex)"
+                  >
+                    &times;
+                  </button>
+                </div>
+              }
+            </div>
           </div>
         }
       </div>

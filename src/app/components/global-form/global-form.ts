@@ -27,20 +27,41 @@ export class GlobalForm implements OnInit {
     this._buildForm();
   }
 
-  public get paragraphsFormArray(): FormArray {
-    return this.form.get('paragraphs') as FormArray;
+  public get sectionsFormArray(): FormArray {
+    return this.form.get('sections') as FormArray;
   }
 
-  public get paragraphsControls() {
-    return this.paragraphsFormArray.controls;
+  public get sectionsControls() {
+    return this.sectionsFormArray.controls;
   }
 
-  public addParagraph(text: string = '') {
-    this.paragraphsFormArray.push(this._fb.control(text));
+  public addSection(title: string = '', paragraphs: string[] = []) {
+    const paragraphControls = paragraphs.map(p => this._fb.control(p));
+    const sectionGroup = this._fb.group({
+      title: [title],
+      paragraphs: this._fb.array(paragraphControls)
+    });
+    this.sectionsFormArray.push(sectionGroup);
   }
 
-  public removeParagraph(index: number) {
-    this.paragraphsFormArray.removeAt(index);
+  public removeSection(index: number) {
+    this.sectionsFormArray.removeAt(index);
+  }
+
+  public getParagraphsFormArray(sectionIndex: number): FormArray {
+    return this.sectionsFormArray.at(sectionIndex).get('paragraphs') as FormArray;
+  }
+
+  public getParagraphsControls(sectionIndex: number) {
+    return this.getParagraphsFormArray(sectionIndex).controls;
+  }
+
+  public addParagraphToSection(sectionIndex: number, text: string = '') {
+    this.getParagraphsFormArray(sectionIndex).push(this._fb.control(text));
+  }
+
+  public removeParagraphFromSection(sectionIndex: number, paragraphIndex: number) {
+    this.getParagraphsFormArray(sectionIndex).removeAt(paragraphIndex);
   }
 
   private _buildForm() {
@@ -80,8 +101,7 @@ export class GlobalForm implements OnInit {
           heroEyebrow: [''],
           heroTitle: [''],
           heroDescription: [''],
-          sectionTitle: [''],
-          paragraphs: this._fb.array([])
+          sections: this._fb.array([])
         });
 
         this.form.get('category')?.valueChanges.pipe(
@@ -142,7 +162,7 @@ export class GlobalForm implements OnInit {
     if (this.form.valid) {
       this._formService.submitForm(this.formType, this.form.value);
       this.form.reset();
-      this.paragraphsFormArray.clear();
+      this.sectionsFormArray.clear();
       this.selectedCategory = '';
     } else {
       this.form.markAllAsTouched();

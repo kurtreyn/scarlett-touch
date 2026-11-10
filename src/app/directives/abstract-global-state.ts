@@ -52,9 +52,6 @@ export class AbstractGlobalState implements OnInit, OnDestroy {
     });
 
     this._loadPosts();
-    this.aboutPosts$.pipe(take(1)).subscribe(posts => {
-      console.log('About posts:', posts);
-    });
   }
 
   ngOnDestroy(): void { }
